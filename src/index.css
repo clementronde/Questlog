@@ -1,0 +1,167 @@
+@import "tailwindcss";
+
+/* ── Pixel Art RPG Design System ─────────────────────────────────────────── */
+
+@layer base {
+  :root {
+    /* Palette */
+    --void:          #050510;
+    --bg-deep:       #0d0d1a;
+    --bg-card:       #12122a;
+    --bg-surface:    #1a1a3a;
+    --bg-raised:     #222248;
+
+    --border:        #2a2a5a;
+    --border-light:  #3a3a7a;
+    --pixel-shadow:  #000000;
+
+    --purple:        #7b2fff;
+    --purple-light:  #b060ff;
+    --purple-dim:    rgba(123,47,255,0.18);
+
+    --gold:          #ffcc00;
+    --gold-dim:      rgba(255,204,0,0.15);
+    --green:         #00e676;
+    --green-dim:     rgba(0,230,118,0.15);
+    --red:           #ff4444;
+    --red-dim:       rgba(255,68,68,0.15);
+    --blue:          #3d9be9;
+    --orange:        #ff8c00;
+    --cyan:          #00e5ff;
+
+    --text:          #e8e8f8;
+    --text-dim:      #8888aa;
+    --text-faint:    #44446a;
+
+    /* Fonts */
+    --font-pixel:    'Press Start 2P', monospace;
+    --font-vt:       'VT323', monospace;
+    --font-ui:       system-ui, -apple-system, sans-serif;
+
+    /* Font size scale (pixel font) */
+    --fz-2xs:  7px;
+    --fz-xs:   9px;
+    --fz-sm:   11px;
+    --fz-md:   13px;
+    --fz-lg:   16px;
+    --fz-xl:   20px;
+
+    /* VT323 scale */
+    --fz-vt-sm:  16px;
+    --fz-vt-md:  20px;
+    --fz-vt-lg:  26px;
+    --fz-vt-xl:  32px;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+    image-rendering: pixelated;
+  }
+
+  html, body, #root {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    background-color: var(--bg-deep);
+    color: var(--text);
+    font-family: var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+    /* Scanline overlay */
+    background-image: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.06) 0px,
+      rgba(0, 0, 0, 0.06) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  }
+
+  /* Hide scrollbars */
+  * { scrollbar-width: none; -ms-overflow-style: none; }
+  *::-webkit-scrollbar { display: none; }
+}
+
+/* ── Pixel utilities ──────────────────────────────────────────────────────── */
+@layer utilities {
+
+  /* Pixel border — hard offset shadow, no radius */
+  .px-border {
+    border: 2px solid var(--border-light);
+    box-shadow: 3px 3px 0 var(--pixel-shadow);
+    border-radius: 0 !important;
+  }
+
+  .px-border-purple {
+    border: 2px solid var(--purple);
+    box-shadow: 3px 3px 0 var(--pixel-shadow);
+    border-radius: 0 !important;
+  }
+
+  .px-border-gold {
+    border: 2px solid var(--gold);
+    box-shadow: 3px 3px 0 var(--pixel-shadow);
+    border-radius: 0 !important;
+  }
+
+  /* Inset highlight — gives the "raised panel" RPG window look */
+  .px-panel {
+    background: var(--bg-card);
+    border: 2px solid var(--border-light);
+    box-shadow:
+      inset 1px 1px 0 rgba(255,255,255,0.07),
+      inset -1px -1px 0 rgba(0,0,0,0.5),
+      3px 3px 0 var(--pixel-shadow);
+    border-radius: 0 !important;
+  }
+
+  /* Button press: translate + collapse shadow */
+  .px-btn {
+    border-radius: 0 !important;
+    box-shadow: 3px 3px 0 var(--pixel-shadow);
+    transition: box-shadow 60ms, transform 60ms;
+    cursor: pointer;
+  }
+  .px-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 var(--pixel-shadow) !important;
+  }
+
+  /* Pixel font helpers */
+  .font-pixel { font-family: var(--font-pixel) !important; }
+  .font-vt    { font-family: var(--font-vt) !important; }
+
+  /* Dotted divider */
+  .px-divider {
+    border: none;
+    border-top: 2px dashed var(--border);
+  }
+
+  /* Corner decoration — 4px notched corner trick */
+  .px-notch {
+    clip-path: polygon(
+      0 4px, 4px 4px, 4px 0,
+      calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+      100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px),
+      calc(100% - 4px) 100%, 4px 100%, 4px calc(100% - 4px),
+      0 calc(100% - 4px)
+    );
+  }
+
+  /* Blinking cursor caret */
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .px-blink { animation: blink 1s step-end infinite; }
+
+  /* Flicker for legendary */
+  @keyframes flicker {
+    0%,100%{opacity:1} 92%{opacity:1} 93%{opacity:0.7} 94%{opacity:1} 96%{opacity:0.8} 97%{opacity:1}
+  }
+  .px-flicker { animation: flicker 3s ease-in-out infinite; }
+
+  /* Walking animation for sprite */
+  @keyframes walk { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-3px); } }
+  .px-walk { animation: walk 0.5s steps(2) infinite; }
+}
