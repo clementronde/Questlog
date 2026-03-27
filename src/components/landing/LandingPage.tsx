@@ -1067,8 +1067,8 @@ export default function LandingPage({ onEnter }: Props) {
 
       {/* NAV */}
       <nav style={{ position: 'sticky', top: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', height: 56, background: 'rgba(13,13,26,0.95)', backdropFilter: 'blur(8px)', borderBottom: '2px solid rgba(123,47,255,0.25)', boxShadow: '0 2px 0 rgba(0,0,0,0.5)' }}>
-        <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '11px', color: 'var(--purple-light)' }}>⚔ QUESTLOG</div>
-        <motion.button whileTap={{ x: 2, y: 2 }} onClick={onEnter} style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', padding: '8px 14px', background: 'var(--purple-dim)', border: '2px solid var(--purple)', color: 'var(--purple-light)', boxShadow: '2px 2px 0 #000' }}>
+        <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '13px', color: 'var(--purple-light)' }}>⚔ QUESTLOG</div>
+        <motion.button whileTap={{ x: 2, y: 2 }} onClick={onEnter} style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', padding: '8px 14px', background: 'var(--purple-dim)', border: '2px solid var(--purple)', color: 'var(--purple-light)', boxShadow: '2px 2px 0 #000' }}>
           ▶ JOUER
         </motion.button>
       </nav>
@@ -1089,7 +1089,7 @@ export default function LandingPage({ onEnter }: Props) {
         <FloatingTasksAround />
 
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', padding: '6px 14px', marginBottom: 28, background: 'rgba(232,48,48,0.12)', border: '2px solid var(--red)', color: 'var(--red)', boxShadow: '3px 3px 0 #000' }}>
+          style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', padding: '6px 14px', marginBottom: 28, background: 'rgba(232,48,48,0.12)', border: '2px solid var(--red)', color: 'var(--red)', boxShadow: '3px 3px 0 #000' }}>
           ⚠ 59% DES TÂCHES NE SONT JAMAIS TERMINÉES
         </motion.div>
 
@@ -1119,14 +1119,14 @@ export default function LandingPage({ onEnter }: Props) {
             { label: 'RÉCOMPENSES RÉELLES', color: 'var(--purple-light)' },
             { label: '0 TÂCHE OUBLIÉE', color: 'var(--blue)' },
           ].map((b) => (
-            <div key={b.label} style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: b.color, padding: '4px 8px', border: `1px solid ${b.color}`, background: 'rgba(0,0,0,0.3)' }}>
+            <div key={b.label} style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: b.color, padding: '5px 10px', border: `1px solid ${b.color}`, background: 'rgba(0,0,0,0.3)' }}>
               {b.label}
             </div>
           ))}
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}
-          style={{ position: 'absolute', bottom: 24, fontFamily: 'var(--font-pixel)', fontSize: '6px', color: 'var(--text-faint)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          style={{ position: 'absolute', bottom: 24, fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
           <motion.div animate={{ y: [0, 5, 0] }} transition={{ repeat: Infinity, duration: 1.6 }}>▼</motion.div>
           DÉCOUVRIR
         </motion.div>
@@ -1137,11 +1137,11 @@ export default function LandingPage({ onEnter }: Props) {
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
           <FadeIn>
             <div style={{ textAlign: 'center', marginBottom: 48 }}>
-              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--red)', marginBottom: 8 }}>▸ LE PROBLÈME</div>
+              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--red)', marginBottom: 8 }}>▸ LE PROBLÈME</div>
               <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', textShadow: '2px 2px 0 #000', marginBottom: 16 }}>
                 POURQUOI TU ABANDONNES TES TO-DO LISTS
               </div>
-              <p style={{ fontFamily: 'var(--font-vt)', fontSize: '18px', color: 'var(--text-dim)', maxWidth: 500, margin: '0 auto', lineHeight: 1.5 }}>
+              <p style={{ fontFamily: 'var(--font-vt)', fontSize: '21px', color: 'var(--text-dim)', maxWidth: 500, margin: '0 auto', lineHeight: 1.5 }}>
                 Ce n'est pas un problème de discipline. Les apps de productivité classiques ignorent complètement la psychologie humaine.
               </p>
             </div>
@@ -1184,12 +1184,12 @@ export default function LandingPage({ onEnter }: Props) {
                   height: '100%',
                 }}>
                   <div style={{ fontSize: 28, marginBottom: 12 }}>{pain.icon}</div>
-                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: pain.color, marginBottom: 14 }}>{pain.title}</div>
+                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: pain.color, marginBottom: 14 }}>{pain.title}</div>
                   <div style={{ marginBottom: 14, padding: '8px 12px', background: `${pain.color}11`, border: `1px solid ${pain.color}33` }}>
                     <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '18px', color: pain.color, lineHeight: 1 }}>{pain.stat}</div>
-                    <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '5px', color: 'var(--text-faint)', marginTop: 4 }}>{pain.statLabel}</div>
+                    <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)', marginTop: 4 }}>{pain.statLabel}</div>
                   </div>
-                  <p style={{ fontFamily: 'var(--font-vt)', fontSize: '15px', color: 'var(--text-dim)', lineHeight: 1.5, margin: 0 }}>{pain.desc}</p>
+                  <p style={{ fontFamily: 'var(--font-vt)', fontSize: '18px', color: 'var(--text-dim)', lineHeight: 1.5, margin: 0 }}>{pain.desc}</p>
                 </div>
               </FadeIn>
             ))}
@@ -1198,7 +1198,7 @@ export default function LandingPage({ onEnter }: Props) {
           {/* Before → After */}
           <FadeIn delay={0.3}>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: 'var(--text-faint)', marginBottom: 20 }}>QUESTLOG CHANGE TOUT ÇA</div>
+              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)', marginBottom: 20 }}>QUESTLOG CHANGE TOUT ÇA</div>
               <div style={{ display: 'flex', justifyContent: 'center', gap: 32, flexWrap: 'wrap' }}>
                 {[
                   { from: '41%', to: '89%',       label: 'TÂCHES COMPLÉTÉES',    color: 'var(--green)' },
@@ -1211,7 +1211,7 @@ export default function LandingPage({ onEnter }: Props) {
                       <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--text-faint)' }}>→</span>
                       <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '14px', color: s.color, textShadow: '1px 1px 0 #000' }}>{s.to}</span>
                     </div>
-                    <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '5px', color: 'var(--text-faint)' }}>{s.label}</div>
+                    <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)' }}>{s.label}</div>
                   </div>
                 ))}
               </div>
@@ -1224,11 +1224,11 @@ export default function LandingPage({ onEnter }: Props) {
       <section style={{ padding: '60px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', borderTop: '2px solid rgba(123,47,255,0.15)' }}>
         <FadeIn>
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--green)', marginBottom: 8 }}>▸ LA SOLUTION</div>
+            <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--green)', marginBottom: 8 }}>▸ LA SOLUTION</div>
             <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', textShadow: '2px 2px 0 #000', marginBottom: 10 }}>
               CHAQUE TÂCHE DEVIENT UNE VICTOIRE
             </div>
-            <p style={{ fontFamily: 'var(--font-vt)', fontSize: '17px', color: 'var(--text-dim)', maxWidth: 420, margin: '0 auto' }}>
+            <p style={{ fontFamily: 'var(--font-vt)', fontSize: '20px', color: 'var(--text-dim)', maxWidth: 420, margin: '0 auto' }}>
               La gamification booste la complétion de tâches de +48%. Ton cerveau est câblé pour les jeux — on a câblé ta to-do list pareil.
             </p>
           </div>
@@ -1239,11 +1239,11 @@ export default function LandingPage({ onEnter }: Props) {
       {/* INTERACTIVE QUEST DEMO */}
       <section style={{ padding: '60px 24px', maxWidth: 520, margin: '0 auto' }}>
         <FadeIn>
-          <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--purple-light)', marginBottom: 8 }}>▸ RESSENS LA DIFFÉRENCE</div>
+          <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--purple-light)', marginBottom: 8 }}>▸ RESSENS LA DIFFÉRENCE</div>
           <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', marginBottom: 8, textShadow: '2px 2px 0 #000' }}>
             VALIDE UNE QUÊTE — POUR DE VRAI
           </div>
-          <p style={{ fontFamily: 'var(--font-vt)', fontSize: '16px', color: 'var(--text-dim)', marginBottom: 24, lineHeight: 1.5 }}>
+          <p style={{ fontFamily: 'var(--font-vt)', fontSize: '19px', color: 'var(--text-dim)', marginBottom: 24, lineHeight: 1.5 }}>
             Ça prend 5 secondes. Et c'est exactement là que tu comprends pourquoi c'est différent.
           </p>
           <LiveQuestDemo />
@@ -1253,11 +1253,11 @@ export default function LandingPage({ onEnter }: Props) {
       {/* BOSS BATTLE */}
       <section style={{ padding: '0 24px 60px', maxWidth: 520, margin: '0 auto' }}>
         <FadeIn>
-          <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--red)', marginBottom: 8 }}>▸ OBJECTIFS LONG TERME</div>
+          <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--red)', marginBottom: 8 }}>▸ OBJECTIFS LONG TERME</div>
           <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', marginBottom: 8, textShadow: '2px 2px 0 #000' }}>
             TES GRANDS PROJETS DEVIENNENT DES BOSS
           </div>
-          <p style={{ fontFamily: 'var(--font-vt)', fontSize: '16px', color: 'var(--text-dim)', marginBottom: 24, lineHeight: 1.5 }}>
+          <p style={{ fontFamily: 'var(--font-vt)', fontSize: '19px', color: 'var(--text-dim)', marginBottom: 24, lineHeight: 1.5 }}>
             Finir une certification, lancer un projet, tenir une discipline — chaque grande quête aboutit à un combat de boss épique. La motivation devient narrative.
           </p>
           <BossAnimDemo />
@@ -1268,7 +1268,7 @@ export default function LandingPage({ onEnter }: Props) {
       <section style={{ padding: '60px 24px', background: 'rgba(123,47,255,0.04)', borderTop: '2px solid rgba(123,47,255,0.1)', borderBottom: '2px solid rgba(123,47,255,0.1)' }}>
         <div style={{ maxWidth: 700, margin: '0 auto' }}>
           <FadeIn>
-            <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--text-faint)', marginBottom: 8 }}>▸ CLASSES DE HÉROS</div>
+            <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--text-faint)', marginBottom: 8 }}>▸ CLASSES DE HÉROS</div>
             <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', marginBottom: 24, textShadow: '2px 2px 0 #000' }}>
               4 CLASSES AUX BONUS UNIQUES
             </div>
@@ -1278,9 +1278,9 @@ export default function LandingPage({ onEnter }: Props) {
               <FadeIn key={cls.name} delay={i * 0.07}>
                 <div style={{ background: 'var(--bg-card)', border: `2px solid ${cls.color}`, boxShadow: '4px 4px 0 #000', padding: '14px 12px' }}>
                   <div style={{ fontSize: 28, marginBottom: 8 }}>{cls.icon}</div>
-                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: cls.color, marginBottom: 4 }}>{cls.name}</div>
-                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '5px', color: 'var(--text-faint)', marginBottom: 8 }}>{cls.desc}</div>
-                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: cls.color, background: `rgba(0,0,0,0.3)`, border: `1px solid ${cls.color}`, padding: '4px 8px', display: 'inline-block' }}>
+                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '11px', color: cls.color, marginBottom: 6 }}>{cls.name}</div>
+                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)', marginBottom: 10 }}>{cls.desc}</div>
+                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: cls.color, background: `rgba(0,0,0,0.3)`, border: `1px solid ${cls.color}`, padding: '4px 8px', display: 'inline-block' }}>
                     {cls.bonus}
                   </div>
                 </div>
@@ -1293,7 +1293,7 @@ export default function LandingPage({ onEnter }: Props) {
       {/* EQUIPMENT RARITIES */}
       <section style={{ padding: '60px 24px', maxWidth: 700, margin: '0 auto' }}>
         <FadeIn>
-          <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--text-faint)', marginBottom: 8 }}>▸ ÉQUIPEMENT & RARETÉS</div>
+          <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--text-faint)', marginBottom: 8 }}>▸ ÉQUIPEMENT & RARETÉS</div>
           <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', marginBottom: 24, textShadow: '2px 2px 0 #000' }}>
             COFFRES, DROPS & LÉGENDAIRES
           </div>
@@ -1309,7 +1309,7 @@ export default function LandingPage({ onEnter }: Props) {
               { label: 'EPIC',      color: 'var(--purple-light)' },
               { label: 'LEGENDARY', color: 'var(--gold)' },
             ].map((r) => (
-              <div key={r.label} style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: r.color, padding: '5px 10px', border: `2px solid ${r.color}`, background: 'var(--bg-card)', boxShadow: '2px 2px 0 #000' }}>
+              <div key={r.label} style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: r.color, padding: '6px 12px', border: `2px solid ${r.color}`, background: 'var(--bg-card)', boxShadow: '2px 2px 0 #000' }}>
                 {r.label}
               </div>
             ))}
@@ -1326,10 +1326,10 @@ export default function LandingPage({ onEnter }: Props) {
               >
                 <span style={{ fontSize: 28 }}>{item.icon}</span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: item.color }}>{item.name}</div>
-                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '5px', color: 'var(--text-faint)', marginTop: 2 }}>{item.rarity}</div>
+                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px', color: item.color }}>{item.name}</div>
+                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)', marginTop: 4 }}>{item.rarity}</div>
                 </div>
-                <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: item.color, background: 'rgba(0,0,0,0.4)', padding: '4px 8px', border: `1px solid ${item.color}` }}>
+                <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px', color: item.color, background: 'rgba(0,0,0,0.4)', padding: '4px 8px', border: `1px solid ${item.color}` }}>
                   {item.stat}
                 </div>
               </motion.div>
@@ -1348,8 +1348,8 @@ export default function LandingPage({ onEnter }: Props) {
             ].map((c) => (
               <div key={c.label} style={{ background: 'var(--bg-card)', border: `2px solid ${c.color}`, boxShadow: '3px 3px 0 #000', padding: '10px 6px', textAlign: 'center' }}>
                 <div style={{ fontSize: 22, marginBottom: 4 }}>{c.icon}</div>
-                <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '5px', color: c.color, marginBottom: 4 }}>{c.label}</div>
-                <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: 'var(--gold)' }}>{c.cost}</div>
+                <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: c.color, marginBottom: 4 }}>{c.label}</div>
+                <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--gold)' }}>{c.cost}</div>
               </div>
             ))}
           </div>
@@ -1361,12 +1361,12 @@ export default function LandingPage({ onEnter }: Props) {
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 400, height: 400, background: 'radial-gradient(circle, rgba(123,47,255,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <FadeIn>
           <div style={{ textAlign: 'center', position: 'relative' }}>
-            <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--purple-light)', marginBottom: 16 }}>▸ ASSEZ PROCRASTINÉ ?</div>
+            <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--purple-light)', marginBottom: 16 }}>▸ ASSEZ PROCRASTINÉ ?</div>
             <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(16px, 5vw, 24px)', color: '#fff', marginBottom: 12, textShadow: '3px 3px 0 #000' }}>COMMENCE LA VRAIE AVENTURE</div>
             <p style={{ fontFamily: 'var(--font-vt)', fontSize: '20px', color: 'var(--text-dim)', marginBottom: 12, maxWidth: 420 }}>
               Rejoins les joueurs qui finissent leurs tâches — parce que c'est enfin fun de le faire.
             </p>
-            <p style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: 'var(--text-faint)', marginBottom: 32 }}>
+            <p style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)', marginBottom: 32 }}>
               GRATUIT · PWA · INSTALLABLE SUR MOBILE
             </p>
             <motion.button whileTap={{ x: 5, y: 5 }} onClick={onEnter}
@@ -1379,8 +1379,8 @@ export default function LandingPage({ onEnter }: Props) {
 
       {/* FOOTER */}
       <footer style={{ padding: '20px 24px', borderTop: '2px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-        <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--text-faint)' }}>⚔ QUESTLOG · 2026</div>
-        <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: 'var(--text-faint)' }}>BUILT WITH ♥ & PIXEL ART</div>
+        <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--text-faint)' }}>⚔ QUESTLOG · 2026</div>
+        <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)' }}>BUILT WITH ♥ & PIXEL ART</div>
       </footer>
     </div>
   );
