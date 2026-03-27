@@ -1066,9 +1066,9 @@ export default function LandingPage({ onEnter }: Props) {
     }}>
 
       {/* NAV */}
-      <nav style={{ position: 'sticky', top: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', height: 56, background: 'rgba(13,13,26,0.95)', backdropFilter: 'blur(8px)', borderBottom: '2px solid rgba(123,47,255,0.25)', boxShadow: '0 2px 0 rgba(0,0,0,0.5)' }}>
-        <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '13px', color: 'var(--purple-light)' }}>⚔ QUESTLOG</div>
-        <motion.button whileTap={{ x: 2, y: 2 }} onClick={onEnter} style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', padding: '8px 14px', background: 'var(--purple-dim)', border: '2px solid var(--purple)', color: 'var(--purple-light)', boxShadow: '2px 2px 0 #000' }}>
+      <nav className="lp-nav" style={{ position: 'sticky', top: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', height: 56, background: 'rgba(13,13,26,0.95)', backdropFilter: 'blur(8px)', borderBottom: '2px solid rgba(123,47,255,0.25)', boxShadow: '0 2px 0 rgba(0,0,0,0.5)' }}>
+        <div className="lp-nav-logo" style={{ fontFamily: 'var(--font-pixel)', fontSize: '13px', color: 'var(--purple-light)' }}>⚔ QUESTLOG</div>
+        <motion.button className="lp-nav-btn" whileTap={{ x: 2, y: 2 }} onClick={onEnter} style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', padding: '8px 14px', background: 'var(--purple-dim)', border: '2px solid var(--purple)', color: 'var(--purple-light)', boxShadow: '2px 2px 0 #000' }}>
           ▶ JOUER
         </motion.button>
       </nav>
@@ -1076,6 +1076,7 @@ export default function LandingPage({ onEnter }: Props) {
       {/* HERO */}
       <section
         ref={heroRef}
+        className="lp-hero"
         onMouseMove={(e) => {
           const rect = heroRef.current?.getBoundingClientRect();
           if (!rect) return;
@@ -1086,44 +1087,57 @@ export default function LandingPage({ onEnter }: Props) {
         style={{ minHeight: '90vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 24px 40px', position: 'relative', overflow: 'hidden' }}
       >
         <HeroBackground mouseX={heroMouseX} mouseY={heroMouseY} heroRef={heroRef} />
-        <FloatingTasksAround />
+        <div className="lp-floating-tasks-wrap">
+          <FloatingTasksAround />
+        </div>
 
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', padding: '6px 14px', marginBottom: 28, background: 'rgba(232,48,48,0.12)', border: '2px solid var(--red)', color: 'var(--red)', boxShadow: '3px 3px 0 #000' }}>
-          ⚠ 59% DES TÂCHES NE SONT JAMAIS TERMINÉES
-        </motion.div>
+        <div className="lp-hero-inner">
+          <div className="lp-hero-content">
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', padding: '6px 14px', marginBottom: 28, background: 'rgba(232,48,48,0.12)', border: '2px solid var(--red)', color: 'var(--red)', boxShadow: '3px 3px 0 #000' }}>
+              ⚠ 59% DES TÂCHES NE SONT JAMAIS TERMINÉES
+            </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} style={{ textAlign: 'center', marginBottom: 24 }}>
-          <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(32px, 9vw, 56px)', color: '#fff', lineHeight: 1.2, textShadow: '4px 4px 0 var(--purple), 8px 8px 0 #000' }}>QUEST</div>
-          <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(32px, 9vw, 56px)', color: 'var(--purple-light)', lineHeight: 1.2, textShadow: '4px 4px 0 rgba(123,47,255,0.4), 8px 8px 0 #000' }}>LOG</div>
-        </motion.div>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} style={{ textAlign: 'center', marginBottom: 24 }}>
+              <div className="lp-title-line" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(32px, 9vw, 56px)', color: '#fff', lineHeight: 1.2, textShadow: '4px 4px 0 var(--purple), 8px 8px 0 #000' }}>QUEST</div>
+              <div className="lp-title-line" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(32px, 9vw, 56px)', color: 'var(--purple-light)', lineHeight: 1.2, textShadow: '4px 4px 0 rgba(123,47,255,0.4), 8px 8px 0 #000' }}>LOG</div>
+            </motion.div>
 
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
-          style={{ fontFamily: 'var(--font-vt)', fontSize: 'clamp(20px, 5vw, 28px)', color: 'var(--text-dim)', textAlign: 'center', maxWidth: 520, lineHeight: 1.4, marginBottom: 40 }}>
-          Tu en as marre de te fixer des objectifs que tu n'atteins jamais ? Ton cerveau n'est pas flemmard — ta to-do list est juste ennuyeuse.
-        </motion.p>
+            <motion.p className="lp-hero-subtitle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
+              style={{ fontFamily: 'var(--font-vt)', fontSize: 'clamp(20px, 5vw, 28px)', color: 'var(--text-dim)', textAlign: 'center', maxWidth: 520, lineHeight: 1.4, marginBottom: 40 }}>
+              Tu en as marre de te fixer des objectifs que tu n'atteins jamais ? Ton cerveau n'est pas flemmard — ta to-do list est juste ennuyeuse.
+            </motion.p>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-          <motion.button whileTap={{ x: 4, y: 4 }} onClick={onEnter}
-            style={{ fontFamily: 'var(--font-pixel)', fontSize: '11px', padding: '16px 32px', background: 'var(--purple)', border: '2px solid var(--purple-light)', color: '#fff', boxShadow: '5px 5px 0 #000', cursor: 'pointer' }}>
-            ▶ COMMENCER L'AVENTURE
-          </motion.button>
-        </motion.div>
+            <motion.div className="lp-hero-cta-row" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <motion.button whileTap={{ x: 4, y: 4 }} onClick={onEnter}
+                style={{ fontFamily: 'var(--font-pixel)', fontSize: '11px', padding: '16px 32px', background: 'var(--purple)', border: '2px solid var(--purple-light)', color: '#fff', boxShadow: '5px 5px 0 #000', cursor: 'pointer' }}>
+                ▶ COMMENCER L'AVENTURE
+              </motion.button>
+            </motion.div>
 
-        {/* Animated stat badges */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}
-          style={{ display: 'flex', gap: 12, marginTop: 32, flexWrap: 'wrap', justifyContent: 'center' }}>
-          {[
-            { label: '+48% COMPLÉTION', color: 'var(--green)' },
-            { label: 'STREAKS MOTIVANTS', color: 'var(--gold)' },
-            { label: 'RÉCOMPENSES RÉELLES', color: 'var(--purple-light)' },
-            { label: '0 TÂCHE OUBLIÉE', color: 'var(--blue)' },
-          ].map((b) => (
-            <div key={b.label} style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: b.color, padding: '5px 10px', border: `1px solid ${b.color}`, background: 'rgba(0,0,0,0.3)' }}>
-              {b.label}
+            {/* Animated stat badges */}
+            <motion.div className="lp-hero-badges" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}
+              style={{ display: 'flex', gap: 12, marginTop: 32, flexWrap: 'wrap', justifyContent: 'center' }}>
+              {[
+                { label: '+48% COMPLÉTION', color: 'var(--green)' },
+                { label: 'STREAKS MOTIVANTS', color: 'var(--gold)' },
+                { label: 'RÉCOMPENSES RÉELLES', color: 'var(--purple-light)' },
+                { label: '0 TÂCHE OUBLIÉE', color: 'var(--blue)' },
+              ].map((b) => (
+                <div key={b.label} style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: b.color, padding: '5px 10px', border: `1px solid ${b.color}`, background: 'rgba(0,0,0,0.3)' }}>
+                  {b.label}
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Desktop right column — app demo */}
+          <div className="lp-hero-right">
+            <div className="lp-hero-demo-frame">
+              <AppDemo />
             </div>
-          ))}
-        </motion.div>
+          </div>
+        </div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}
           style={{ position: 'absolute', bottom: 24, fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
@@ -1134,7 +1148,7 @@ export default function LandingPage({ onEnter }: Props) {
 
       {/* PAIN POINTS */}
       <section style={{ padding: '80px 24px', background: 'rgba(232,48,48,0.03)', borderTop: '2px solid rgba(232,48,48,0.12)', borderBottom: '2px solid rgba(232,48,48,0.08)' }}>
-        <div style={{ maxWidth: 760, margin: '0 auto' }}>
+        <div className="lp-pain-inner" style={{ maxWidth: 760, margin: '0 auto' }}>
           <FadeIn>
             <div style={{ textAlign: 'center', marginBottom: 48 }}>
               <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--red)', marginBottom: 8 }}>▸ LE PROBLÈME</div>
@@ -1186,7 +1200,7 @@ export default function LandingPage({ onEnter }: Props) {
                   <div style={{ fontSize: 28, marginBottom: 12 }}>{pain.icon}</div>
                   <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: pain.color, marginBottom: 14 }}>{pain.title}</div>
                   <div style={{ marginBottom: 14, padding: '8px 12px', background: `${pain.color}11`, border: `1px solid ${pain.color}33` }}>
-                    <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '18px', color: pain.color, lineHeight: 1 }}>{pain.stat}</div>
+                    <div className="lp-pain-stat" style={{ fontFamily: 'var(--font-pixel)', fontSize: '18px', color: pain.color, lineHeight: 1 }}>{pain.stat}</div>
                     <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)', marginTop: 4 }}>{pain.statLabel}</div>
                   </div>
                   <p style={{ fontFamily: 'var(--font-vt)', fontSize: '18px', color: 'var(--text-dim)', lineHeight: 1.5, margin: 0 }}>{pain.desc}</p>
@@ -1221,59 +1235,77 @@ export default function LandingPage({ onEnter }: Props) {
       </section>
 
       {/* DEMO REEL */}
-      <section style={{ padding: '60px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', borderTop: '2px solid rgba(123,47,255,0.15)' }}>
-        <FadeIn>
-          <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--green)', marginBottom: 8 }}>▸ LA SOLUTION</div>
-            <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', textShadow: '2px 2px 0 #000', marginBottom: 10 }}>
-              CHAQUE TÂCHE DEVIENT UNE VICTOIRE
+      <section className="lp-demo-reel lp-section-decorated" style={{ padding: '60px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', borderTop: '2px solid rgba(123,47,255,0.15)' }}>
+        <div className="lp-demo-reel-inner" style={{ width: '100%' }}>
+          <FadeIn>
+            <div style={{ textAlign: 'center', marginBottom: 36 }}>
+              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--green)', marginBottom: 8 }}>▸ LA SOLUTION</div>
+              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', textShadow: '2px 2px 0 #000', marginBottom: 10 }}>
+                CHAQUE TÂCHE DEVIENT UNE VICTOIRE
+              </div>
+              <p style={{ fontFamily: 'var(--font-vt)', fontSize: '20px', color: 'var(--text-dim)', maxWidth: 420, margin: '0 auto' }}>
+                La gamification booste la complétion de tâches de +48%. Ton cerveau est câblé pour les jeux — on a câblé ta to-do list pareil.
+              </p>
             </div>
-            <p style={{ fontFamily: 'var(--font-vt)', fontSize: '20px', color: 'var(--text-dim)', maxWidth: 420, margin: '0 auto' }}>
-              La gamification booste la complétion de tâches de +48%. Ton cerveau est câblé pour les jeux — on a câblé ta to-do list pareil.
-            </p>
-          </div>
-          <AppDemo />
-        </FadeIn>
+            <AppDemo />
+          </FadeIn>
+        </div>
       </section>
 
       {/* INTERACTIVE QUEST DEMO */}
-      <section style={{ padding: '60px 24px', maxWidth: 520, margin: '0 auto' }}>
-        <FadeIn>
-          <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--purple-light)', marginBottom: 8 }}>▸ RESSENS LA DIFFÉRENCE</div>
-          <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', marginBottom: 8, textShadow: '2px 2px 0 #000' }}>
-            VALIDE UNE QUÊTE — POUR DE VRAI
+      <section style={{ padding: '60px 24px' }}>
+        <div className="lp-feature-row">
+          <div className="lp-feature-text">
+            <FadeIn>
+              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--purple-light)', marginBottom: 8 }}>▸ RESSENS LA DIFFÉRENCE</div>
+              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', marginBottom: 8, textShadow: '2px 2px 0 #000' }}>
+                VALIDE UNE QUÊTE — POUR DE VRAI
+              </div>
+              <p style={{ fontFamily: 'var(--font-vt)', fontSize: '19px', color: 'var(--text-dim)', marginBottom: 24, lineHeight: 1.5 }}>
+                Ça prend 5 secondes. Et c'est exactement là que tu comprends pourquoi c'est différent.
+              </p>
+            </FadeIn>
           </div>
-          <p style={{ fontFamily: 'var(--font-vt)', fontSize: '19px', color: 'var(--text-dim)', marginBottom: 24, lineHeight: 1.5 }}>
-            Ça prend 5 secondes. Et c'est exactement là que tu comprends pourquoi c'est différent.
-          </p>
-          <LiveQuestDemo />
-        </FadeIn>
+          <div>
+            <FadeIn delay={0.1}>
+              <LiveQuestDemo />
+            </FadeIn>
+          </div>
+        </div>
       </section>
 
       {/* BOSS BATTLE */}
-      <section style={{ padding: '0 24px 60px', maxWidth: 520, margin: '0 auto' }}>
-        <FadeIn>
-          <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--red)', marginBottom: 8 }}>▸ OBJECTIFS LONG TERME</div>
-          <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', marginBottom: 8, textShadow: '2px 2px 0 #000' }}>
-            TES GRANDS PROJETS DEVIENNENT DES BOSS
+      <section style={{ padding: '0 24px 60px' }}>
+        <div className="lp-feature-row lp-feature-row-reverse">
+          <div className="lp-feature-text">
+            <FadeIn>
+              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--red)', marginBottom: 8 }}>▸ OBJECTIFS LONG TERME</div>
+              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', marginBottom: 8, textShadow: '2px 2px 0 #000' }}>
+                TES GRANDS PROJETS DEVIENNENT DES BOSS
+              </div>
+              <p style={{ fontFamily: 'var(--font-vt)', fontSize: '19px', color: 'var(--text-dim)', marginBottom: 24, lineHeight: 1.5 }}>
+                Finir une certification, lancer un projet, tenir une discipline — chaque grande quête aboutit à un combat de boss épique. La motivation devient narrative.
+              </p>
+            </FadeIn>
           </div>
-          <p style={{ fontFamily: 'var(--font-vt)', fontSize: '19px', color: 'var(--text-dim)', marginBottom: 24, lineHeight: 1.5 }}>
-            Finir une certification, lancer un projet, tenir une discipline — chaque grande quête aboutit à un combat de boss épique. La motivation devient narrative.
-          </p>
-          <BossAnimDemo />
-        </FadeIn>
+          <div>
+            <FadeIn delay={0.1}>
+              <BossAnimDemo />
+            </FadeIn>
+          </div>
+        </div>
       </section>
 
       {/* HERO CLASSES */}
-      <section style={{ padding: '60px 24px', background: 'rgba(123,47,255,0.04)', borderTop: '2px solid rgba(123,47,255,0.1)', borderBottom: '2px solid rgba(123,47,255,0.1)' }}>
-        <div style={{ maxWidth: 700, margin: '0 auto' }}>
+      <section className="lp-section-decorated" style={{ padding: '60px 24px', background: 'rgba(123,47,255,0.04)', borderTop: '2px solid rgba(123,47,255,0.1)', borderBottom: '2px solid rgba(123,47,255,0.1)' }}>
+        <div className="lp-class-section" style={{ maxWidth: 700, margin: '0 auto' }}>
           <FadeIn>
             <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--text-faint)', marginBottom: 8 }}>▸ CLASSES DE HÉROS</div>
             <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', marginBottom: 24, textShadow: '2px 2px 0 #000' }}>
               4 CLASSES AUX BONUS UNIQUES
             </div>
           </FadeIn>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+          <div className="lp-class-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
             {CLASS_DEMO.map((cls, i) => (
               <FadeIn key={cls.name} delay={i * 0.07}>
                 <div style={{ background: 'var(--bg-card)', border: `2px solid ${cls.color}`, boxShadow: '4px 4px 0 #000', padding: '14px 12px' }}>
@@ -1291,7 +1323,7 @@ export default function LandingPage({ onEnter }: Props) {
       </section>
 
       {/* EQUIPMENT RARITIES */}
-      <section style={{ padding: '60px 24px', maxWidth: 700, margin: '0 auto' }}>
+      <section className="lp-equipment-section lp-section-decorated" style={{ padding: '60px 24px', maxWidth: 700, margin: '0 auto' }}>
         <FadeIn>
           <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--text-faint)', marginBottom: 8 }}>▸ ÉQUIPEMENT & RARETÉS</div>
           <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', marginBottom: 24, textShadow: '2px 2px 0 #000' }}>
@@ -1357,13 +1389,13 @@ export default function LandingPage({ onEnter }: Props) {
       </section>
 
       {/* FINAL CTA */}
-      <section style={{ padding: '60px 24px 80px', display: 'flex', flexDirection: 'column', alignItems: 'center', borderTop: '2px solid rgba(123,47,255,0.2)', background: 'rgba(123,47,255,0.04)', position: 'relative', overflow: 'hidden' }}>
+      <section className="lp-cta-section" style={{ padding: '60px 24px 80px', display: 'flex', flexDirection: 'column', alignItems: 'center', borderTop: '2px solid rgba(123,47,255,0.2)', background: 'rgba(123,47,255,0.04)', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 400, height: 400, background: 'radial-gradient(circle, rgba(123,47,255,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <FadeIn>
           <div style={{ textAlign: 'center', position: 'relative' }}>
             <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--purple-light)', marginBottom: 16 }}>▸ ASSEZ PROCRASTINÉ ?</div>
-            <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(16px, 5vw, 24px)', color: '#fff', marginBottom: 12, textShadow: '3px 3px 0 #000' }}>COMMENCE LA VRAIE AVENTURE</div>
-            <p style={{ fontFamily: 'var(--font-vt)', fontSize: '20px', color: 'var(--text-dim)', marginBottom: 12, maxWidth: 420 }}>
+            <div className="lp-cta-title" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(16px, 5vw, 24px)', color: '#fff', marginBottom: 12, textShadow: '3px 3px 0 #000' }}>COMMENCE LA VRAIE AVENTURE</div>
+            <p className="lp-cta-sub" style={{ fontFamily: 'var(--font-vt)', fontSize: '20px', color: 'var(--text-dim)', marginBottom: 12, maxWidth: 420 }}>
               Rejoins les joueurs qui finissent leurs tâches — parce que c'est enfin fun de le faire.
             </p>
             <p style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)', marginBottom: 32 }}>
@@ -1378,7 +1410,7 @@ export default function LandingPage({ onEnter }: Props) {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ padding: '20px 24px', borderTop: '2px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+      <footer className="lp-footer" style={{ padding: '20px 24px', borderTop: '2px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
         <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--text-faint)' }}>⚔ QUESTLOG · 2026</div>
         <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)' }}>BUILT WITH ♥ & PIXEL ART</div>
       </footer>
