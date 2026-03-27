@@ -11,7 +11,7 @@ const TABS: {
   { id: 'character', label: 'HÉROS',   Icon: User },
   { id: 'dungeon',   label: 'DONJON',  Icon: Skull },
   { id: 'shop',      label: 'SHOP',    Icon: ShoppingBag },
-  { id: 'settings',  label: 'OPTIONS',  Icon: Settings },
+  { id: 'settings',  label: 'OPTIONS', Icon: Settings },
 ];
 
 interface Props {
@@ -59,7 +59,7 @@ export default function BottomNav({ activeTab, onChange }: Props) {
             <motion.div animate={{ scale: active ? 1.1 : 1 }} transition={{ duration: 0.1 }}>
               <Icon size={16} strokeWidth={active ? 2.5 : 1.5} />
             </motion.div>
-            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', lineHeight: 1 }}>
+            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', lineHeight: 1 }}>
               {label}
             </span>
           </button>

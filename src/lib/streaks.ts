@@ -4,6 +4,14 @@ export function todayKey(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+/** Returns the ISO date string of the Monday of the given date's week (defaults to today). */
+export function weekStartKey(dateStr?: string): string {
+  const d = dateStr ? new Date(dateStr) : new Date();
+  const day = d.getDay(); // 0=Sun
+  d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 /** Returns yesterday's date key. */
 function yesterdayKey(): string {
   const d = new Date();

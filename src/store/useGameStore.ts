@@ -8,7 +8,7 @@ import {
   xpIntoCurrentLevel,
   xpForCurrentLevel,
 } from '../lib/xp';
-import { updateStreak, comboMultiplier, todayKey } from '../lib/streaks';
+import { updateStreak, comboMultiplier, todayKey, weekStartKey } from '../lib/streaks';
 import { checkNewAchievements, type Achievement } from '../lib/achievements';
 import { DEFAULT_THEME_ID } from '../lib/themes';
 import { syncPlayer } from '../lib/supabase';
@@ -23,16 +23,21 @@ import {
 } from '../lib/equipment';
 import { type HeroClass, CLASSES } from '../lib/classes';
 import { type BossState, createInitialBosses, BOSS_POOL } from '../lib/bosses';
+import { type QuestCategory } from '../lib/categories';
+import { getSkillBonuses, SKILL_MAP } from '../lib/skills';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type QuestStatus = 'active' | 'completed';
+export type QuestStatus    = 'active' | 'completed';
+export type QuestRecurrence = 'none' | 'daily' | 'weekly';
 
 export interface Quest {
   id: string;
   title: string;
   difficulty: Difficulty;
   status: QuestStatus;
+  recurrence: QuestRecurrence;
+  category: QuestCategory;
   createdAt: string;
   completedAt?: string;
   xpReward: number;
@@ -87,11 +92,19 @@ export interface GameState {
   // Boss battles
   bosses: BossState[];
 
+  // Skills
+  skillPoints: number;
+  unlockedSkills: string[];
+
+  // Notifications
+  notificationsEnabled: boolean;
+
   // Quest actions
-  addQuest: (title: string, difficulty: Difficulty) => void;
+  addQuest: (title: string, difficulty: Difficulty, recurrence?: QuestRecurrence, category?: QuestCategory) => void;
   completeQuest: (id: string) => void;
   deleteQuest: (id: string) => void;
   clearCompleted: () => void;
+  resetRecurringQuests: () => void;
 
   // Reward actions
   addReward: (reward: Omit<Reward, 'id' | 'timesRedeemed'>) => void;
@@ -108,6 +121,12 @@ export interface GameState {
   buyChest: (tier: ChestTier) => void;
   openChest: (instanceId: string) => void;
   dismissLoot: () => void;
+
+  // Skills
+  unlockSkill: (id: string) => void;
+
+  // Notifications
+  setNotificationsEnabled: (v: boolean) => void;
 
   // Boss
   engageBoss: (bossId: string) => void;
@@ -193,15 +212,20 @@ export const useGameStore = create<GameState>()(
       chests: [],
       pendingLoot: null,
       bosses: createInitialBosses(),
+      skillPoints: 0,
+      unlockedSkills: [],
+      notificationsEnabled: false,
 
       // ── Quest actions ──────────────────────────────────────────────────────
-      addQuest(title, difficulty) {
+      addQuest(title, difficulty, recurrence = 'none', category = 'other') {
         const baseXp = XP_WEIGHTS[difficulty];
         const quest: Quest = {
           id: uid(),
           title,
           difficulty,
           status: 'active',
+          recurrence,
+          category,
           createdAt: new Date().toISOString(),
           xpReward: baseXp,
           goldReward: xpToGold(baseXp),
@@ -209,8 +233,25 @@ export const useGameStore = create<GameState>()(
         set((s) => ({ quests: [quest, ...s.quests] }));
       },
 
+      resetRecurringQuests() {
+        const today    = todayKey();
+        const thisWeek = weekStartKey();
+        set((s) => ({
+          quests: s.quests.map((q) => {
+            if (q.status !== 'completed' || !q.recurrence || q.recurrence === 'none') return q;
+            if (q.recurrence === 'daily' && q.completedAt?.slice(0, 10) !== today) {
+              return { ...q, status: 'active' as QuestStatus, completedAt: undefined };
+            }
+            if (q.recurrence === 'weekly' && weekStartKey(q.completedAt) !== thisWeek) {
+              return { ...q, status: 'active' as QuestStatus, completedAt: undefined };
+            }
+            return q;
+          }),
+        }));
+      },
+
       completeQuest(id) {
-        const { quests, character, unlockedAchievements, rewards, inventory, equipped } = get();
+        const { quests, character, unlockedAchievements, rewards, inventory, equipped, unlockedSkills, skillPoints } = get();
         const quest = quests.find((q) => q.id === id);
         if (!quest || quest.status === 'completed') return;
 
@@ -221,6 +262,9 @@ export const useGameStore = create<GameState>()(
         // ── Equipment bonuses ──
         const equip = getEquipBonuses(inventory, equipped);
 
+        // ── Skill bonuses ──
+        const skills = getSkillBonuses(unlockedSkills);
+
         // ── Class bonuses ──
         const cls = character.heroClass ? CLASSES[character.heroClass] : null;
         const isHardOrBoss = quest.difficulty === 'hard' || quest.difficulty === 'boss';
@@ -230,8 +274,11 @@ export const useGameStore = create<GameState>()(
         const classGoldBonus = cls ? cls.goldBonus : 0;
 
         // ── Final rewards ──
-        const xpMulti = multiplier * (1 + (equip.xpBonus + classXpBonus) / 100);
-        const goldMulti = multiplier * (1 + (equip.goldBonus + classGoldBonus) / 100);
+        const totalXpBonus = equip.xpBonus + classXpBonus + skills.xpBonus;
+        const totalGoldBonus = equip.goldBonus + classGoldBonus + skills.goldBonus;
+        const totalComboBonus = equip.comboBonus + skills.comboBonus;
+        const xpMulti = multiplier * (1 + totalXpBonus / 100);
+        const goldMulti = multiplier * (1 + totalGoldBonus / 100);
         const earnedXp   = Math.round(quest.xpReward * xpMulti);
         const earnedGold = Math.round(quest.goldReward * goldMulti);
 
@@ -241,7 +288,7 @@ export const useGameStore = create<GameState>()(
         const newGold    = character.gold + earnedGold;
         const newCharacter = buildCharacter(
           newTotalXp, newGold, streak, lastActiveDate,
-          character.heroClass, equip.comboBonus,
+          character.heroClass, totalComboBonus,
         );
 
         const updatedQuests = quests.map((q) =>
@@ -258,8 +305,12 @@ export const useGameStore = create<GameState>()(
         const achievementXpBonus = newlyUnlocked.reduce((s, a) => s + a.xpBonus, 0);
         const finalXp = newTotalXp + achievementXpBonus;
         const finalCharacter = achievementXpBonus > 0
-          ? buildCharacter(finalXp, newGold, streak, lastActiveDate, character.heroClass, equip.comboBonus)
+          ? buildCharacter(finalXp, newGold, streak, lastActiveDate, character.heroClass, totalComboBonus)
           : newCharacter;
+
+        // ── Skill points on level up ──
+        const levelsGained = finalCharacter.level - prevLevel;
+        const newSkillPoints = skillPoints + levelsGained;
 
         // ── Chest drop from quest ──
         let newChests = [...get().chests];
@@ -277,6 +328,7 @@ export const useGameStore = create<GameState>()(
           unlockedAchievements: [...s.unlockedAchievements, ...newlyUnlocked.map((a) => a.id)],
           achievementQueue: [...s.achievementQueue, ...newlyUnlocked],
           chests: newChests,
+          skillPoints: newSkillPoints,
         }));
 
         setTimeout(() => get().syncLeaderboard(), 0);
@@ -376,6 +428,24 @@ export const useGameStore = create<GameState>()(
         set({ pendingLoot: null });
       },
 
+      // ── Skills ─────────────────────────────────────────────────────────────
+      unlockSkill(id) {
+        const { skillPoints, unlockedSkills } = get();
+        const skill = SKILL_MAP[id];
+        if (!skill || unlockedSkills.includes(id)) return;
+        if (skill.requires && !unlockedSkills.includes(skill.requires)) return;
+        if (skillPoints < skill.cost) return;
+        set((s) => ({
+          skillPoints: s.skillPoints - skill.cost,
+          unlockedSkills: [...s.unlockedSkills, id],
+        }));
+      },
+
+      // ── Notifications ──────────────────────────────────────────────────────
+      setNotificationsEnabled(v) {
+        set({ notificationsEnabled: v });
+      },
+
       engageBoss(bossId) {
         const { bosses, character } = get();
         const boss = bosses.find((b) => b.id === bossId);
@@ -437,7 +507,7 @@ export const useGameStore = create<GameState>()(
     }),
     {
       name: 'questlog-storage',
-      version: 4,
+      version: 5,
       partialize: (s) => ({
         quests: s.quests,
         rewards: s.rewards,
@@ -451,6 +521,9 @@ export const useGameStore = create<GameState>()(
         equipped: s.equipped,
         chests: s.chests,
         bosses: s.bosses,
+        skillPoints: s.skillPoints,
+        unlockedSkills: s.unlockedSkills,
+        notificationsEnabled: s.notificationsEnabled,
       }),
       migrate(persisted: unknown, _fromVersion: number) {
         const state = persisted as Partial<GameState>;
@@ -478,7 +551,7 @@ export const useGameStore = create<GameState>()(
           unlockedAchievements: Array.isArray(p.unlockedAchievements) ? p.unlockedAchievements : [],
           achievementQueue: [],
           pendingLoot: null,
-          quests: Array.isArray(p.quests) ? p.quests : [],
+          quests: Array.isArray(p.quests) ? p.quests.map((q: any) => ({ recurrence: 'none', category: 'other', ...q })) : [],
           rewards: Array.isArray(p.rewards) && p.rewards.length > 0 ? p.rewards : current.rewards,
           character: p.character ? { ...current.character, ...p.character, heroClass: (p.character as any).heroClass ?? null } : current.character,
           installDismissed: p.installDismissed ?? false,
@@ -491,6 +564,9 @@ export const useGameStore = create<GameState>()(
           bosses: Array.isArray((p as any).bosses) && (p as any).bosses.length > 0
             ? (p as any).bosses
             : createInitialBosses(),
+          skillPoints: (p as any).skillPoints ?? 0,
+          unlockedSkills: Array.isArray((p as any).unlockedSkills) ? (p as any).unlockedSkills : [],
+          notificationsEnabled: (p as any).notificationsEnabled ?? false,
         };
       },
     }

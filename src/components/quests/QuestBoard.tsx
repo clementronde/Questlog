@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   useGameStore,
@@ -27,11 +27,20 @@ export default function QuestBoard() {
   const [sort, setSort]       = useState<SortKey>('date');
   const [filter, setFilter]   = useState<FilterKey>('all');
 
-  const activeQuests    = useGameStore(useShallow(selectActiveQuests));
-  const completedQuests = useGameStore(useShallow(selectCompletedQuests));
-  const todayCompleted  = useGameStore(useShallow(selectTodayCompleted));
-  const clearCompleted  = useGameStore((s) => s.clearCompleted);
-  const character       = useGameStore((s) => s.character);
+  const activeQuests           = useGameStore(useShallow(selectActiveQuests));
+  const completedQuests        = useGameStore(useShallow(selectCompletedQuests));
+  const todayCompleted         = useGameStore(useShallow(selectTodayCompleted));
+  const clearCompleted         = useGameStore((s) => s.clearCompleted);
+  const resetRecurringQuests   = useGameStore((s) => s.resetRecurringQuests);
+  const character              = useGameStore((s) => s.character);
+
+  // Auto-reset recurring quests on mount and when tab becomes visible
+  useEffect(() => {
+    resetRecurringQuests();
+    const onVisible = () => { if (document.visibilityState === 'visible') resetRecurringQuests(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, []);
 
   const title = titleFromLevel(character.level);
 
@@ -40,18 +49,19 @@ export default function QuestBoard() {
   const dailyGoal  = Math.max(activeQuests.length + todayTotal, 1);
   const dailyPct   = Math.min(todayTotal / dailyGoal, 1);
 
-  // Sorted active quests
-  const sorted = useMemo(() => {
-    const list = [...activeQuests];
-    if (sort === 'difficulty') list.sort((a, b) => DIFF_ORDER[b.difficulty] - DIFF_ORDER[a.difficulty]);
-    else if (sort === 'xp')    list.sort((a, b) => b.xpReward - a.xpReward);
-    return list;
+  // Sorted active quests — split recurring vs one-time
+  const { sorted, recurringActive } = useMemo(() => {
+    const oneTime   = activeQuests.filter((q) => q.recurrence === 'none');
+    const recurring = activeQuests.filter((q) => q.recurrence !== 'none');
+    const sortFn = (list: typeof activeQuests) => {
+      const l = [...list];
+      if (sort === 'difficulty') l.sort((a, b) => DIFF_ORDER[b.difficulty] - DIFF_ORDER[a.difficulty]);
+      else if (sort === 'xp')    l.sort((a, b) => b.xpReward - a.xpReward);
+      return l;
+    };
+    return { sorted: sortFn(oneTime), recurringActive: sortFn(recurring) };
   }, [activeQuests, sort]);
 
-  const cycleSort = () => {
-    const keys: SortKey[] = ['date', 'difficulty', 'xp'];
-    setSort((s) => keys[(keys.indexOf(s) + 1) % keys.length]);
-  };
 
   return (
     <div className="flex flex-col min-h-full px-3 pt-4 pb-4">
@@ -157,20 +167,22 @@ export default function QuestBoard() {
 
         <div style={{ flex: 1 }} />
 
-        <motion.button
-          whileTap={{ x: 1, y: 1 }}
-          onClick={cycleSort}
-          style={{
-            fontFamily: 'var(--font-pixel)', fontSize: '8px',
-            padding: '5px 8px',
-            background: 'var(--bg-card)',
-            border: '2px solid var(--border-light)',
-            color: 'var(--text-dim)',
-            boxShadow: '2px 2px 0 #000',
-          }}
-        >
-          SORT: {SORT_LABELS[sort]}
-        </motion.button>
+        {(['date', 'difficulty', 'xp'] as SortKey[]).map((key) => (
+          <button
+            key={key}
+            onClick={() => setSort(key)}
+            style={{
+              fontFamily: 'var(--font-pixel)', fontSize: '7px',
+              padding: '5px 7px',
+              background: sort === key ? 'var(--purple-dim)' : 'var(--bg-card)',
+              border: `2px solid ${sort === key ? 'var(--purple)' : 'var(--border)'}`,
+              color: sort === key ? 'var(--purple-light)' : 'var(--text-faint)',
+              boxShadow: sort === key ? '2px 2px 0 #000' : 'none',
+            }}
+          >
+            {SORT_LABELS[key]}
+          </button>
+        ))}
 
         <motion.button
           onClick={() => setShowAdd(true)}
@@ -186,14 +198,32 @@ export default function QuestBoard() {
         </motion.button>
       </div>
 
+      {/* ── Habitudes (recurring) section ── */}
+      {recurringActive.length > 0 && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--blue)' }}>
+              ▸ HABITUDES · {recurringActive.length}
+            </span>
+            <div style={{ flex: 1, borderTop: '1px dashed var(--blue)', opacity: 0.35 }} />
+          </div>
+          <AnimatePresence initial={false}>
+            {recurringActive.map((quest) => (
+              <QuestCard key={quest.id} quest={quest} />
+            ))}
+          </AnimatePresence>
+          <div style={{ marginBottom: 12 }} />
+        </>
+      )}
+
       {/* ── Quest list label ── */}
       <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--text-faint)', marginBottom: 8 }}>
-        ▸ ACTIVE QUESTS · {activeQuests.length}
+        ▸ ACTIVE QUESTS · {sorted.length}
       </div>
 
       {/* ── Active quests ── */}
       <AnimatePresence initial={false}>
-        {sorted.length === 0 && (
+        {sorted.length === 0 && recurringActive.length === 0 && (
           <motion.div
             key="empty"
             initial={{ opacity: 0 }}
@@ -206,6 +236,12 @@ export default function QuestBoard() {
               NO ACTIVE QUESTS<br />
               <span style={{ color: 'var(--text-dim)' }}>PRESS ＋ TO BEGIN</span>
             </p>
+          </motion.div>
+        )}
+        {sorted.length === 0 && recurringActive.length > 0 && (
+          <motion.div key="empty-one-time" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)', textAlign: 'center', padding: '8px 0 4px' }}>
+            — aucune quête ponctuelle —
           </motion.div>
         )}
         {sorted.map((quest) => (

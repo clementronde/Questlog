@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../../store/useGameStore';
 import { type Difficulty, XP_WEIGHTS } from '../../lib/xp';
+import { type QuestRecurrence } from '../../store/useGameStore';
+import { type QuestCategory, CATEGORIES, CATEGORY_LIST } from '../../lib/categories';
 
 const DIFFICULTIES: Difficulty[] = ['trivial', 'easy', 'medium', 'hard', 'boss'];
 
@@ -13,11 +15,19 @@ const DIFF_CONFIG: Record<Difficulty, { label: string; rank: string; color: stri
   boss:    { label: 'BOSS',    rank: 'S', color: 'var(--red)' },
 };
 
+const RECURRENCE_CONFIG: { id: QuestRecurrence; icon: string; label: string }[] = [
+  { id: 'none',   icon: '○',  label: 'UNIQUE'  },
+  { id: 'daily',  icon: '📅', label: 'DAILY'   },
+  { id: 'weekly', icon: '📆', label: 'WEEKLY'  },
+];
+
 interface Props { onClose: () => void }
 
 export default function AddQuestModal({ onClose }: Props) {
-  const [title, setTitle] = useState('');
+  const [title, setTitle]           = useState('');
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
+  const [recurrence, setRecurrence] = useState<QuestRecurrence>('none');
+  const [category, setCategory]     = useState<QuestCategory>('other');
   const addQuest = useGameStore((s) => s.addQuest);
   const combo    = useGameStore((s) => s.character.combo) / 100;
 
@@ -25,7 +35,7 @@ export default function AddQuestModal({ onClose }: Props) {
 
   const handleSubmit = () => {
     if (!title.trim()) return;
-    addQuest(title.trim(), difficulty);
+    addQuest(title.trim(), difficulty, recurrence, category);
     onClose();
   };
 
@@ -122,6 +132,67 @@ export default function AddQuestModal({ onClose }: Props) {
                     </span>
                     <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '5px', color: active ? '#000' : 'var(--text-faint)' }}>
                       {cfg.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Category picker */}
+          <div className="mb-4">
+            <label style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--text-dim)', display: 'block', marginBottom: 6 }}>
+              CATÉGORIE
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4 }}>
+              {CATEGORY_LIST.map((cat) => {
+                const cfg    = CATEGORIES[cat];
+                const active = category === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setCategory(cat)}
+                    style={{
+                      padding: '6px 4px',
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
+                      background: active ? `color-mix(in srgb, ${cfg.color} 25%, transparent)` : 'var(--bg-deep)',
+                      border: `2px solid ${active ? cfg.color : 'var(--border)'}`,
+                      boxShadow: active ? '2px 2px 0 #000' : 'none',
+                    }}
+                  >
+                    <span style={{ fontSize: 12 }}>{cfg.icon}</span>
+                    <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '4px', color: active ? cfg.color : 'var(--text-faint)' }}>
+                      {cfg.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Recurrence picker */}
+          <div className="mb-4">
+            <label style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--text-dim)', display: 'block', marginBottom: 6 }}>
+              RÉCURRENCE
+            </label>
+            <div className="flex gap-2">
+              {RECURRENCE_CONFIG.map(({ id, icon, label }) => {
+                const active = recurrence === id;
+                const color = id === 'daily' ? 'var(--blue)' : id === 'weekly' ? 'var(--purple-light)' : 'var(--text-dim)';
+                return (
+                  <button
+                    key={id}
+                    onClick={() => setRecurrence(id)}
+                    className="flex-1 py-2 flex flex-col items-center gap-1"
+                    style={{
+                      background: active ? color : 'var(--bg-deep)',
+                      border: `2px solid ${active ? color : 'var(--border)'}`,
+                      boxShadow: active ? '3px 3px 0 #000' : 'none',
+                    }}
+                  >
+                    <span style={{ fontSize: id === 'none' ? 14 : 12 }}>{icon}</span>
+                    <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '5px', color: active ? '#000' : 'var(--text-faint)' }}>
+                      {label}
                     </span>
                   </button>
                 );

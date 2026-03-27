@@ -3,6 +3,27 @@ import { motion } from 'framer-motion';
 import { Check, Trash2 } from 'lucide-react';
 import { useGameStore, type Quest } from '../../store/useGameStore';
 import { haptic, playComplete, spawnXPFloat } from '../../lib/feedback';
+import { todayKey, weekStartKey } from '../../lib/streaks';
+import { CATEGORIES } from '../../lib/categories';
+
+function resetLabel(quest: Quest): string | null {
+  if (quest.recurrence === 'none' || quest.status !== 'completed') return null;
+  if (quest.recurrence === 'daily') return 'reset demain';
+  if (quest.recurrence === 'weekly') {
+    const todayDate  = new Date();
+    const weekStart  = new Date(weekStartKey());
+    weekStart.setDate(weekStart.getDate() + 7); // next Monday
+    const diffMs   = weekStart.getTime() - todayDate.getTime();
+    const diffDays = Math.ceil(diffMs / 86_400_000);
+    return `reset dans ${diffDays}j`;
+  }
+  return null;
+}
+
+const REC_BADGE: Record<string, { icon: string; color: string; label: string }> = {
+  daily:  { icon: '📅', color: 'var(--blue)',         label: 'DAILY'  },
+  weekly: { icon: '📆', color: 'var(--purple-light)', label: 'WEEKLY' },
+};
 
 const DIFF_CONFIG: Record<string, { label: string; color: string; rank: string }> = {
   trivial: { label: 'Trivial', color: 'var(--text-dim)',  rank: 'E' },
@@ -21,6 +42,10 @@ export default function QuestCard({ quest }: { quest: Quest }) {
   const isCompleted = quest.status === 'completed';
   const diff        = DIFF_CONFIG[quest.difficulty];
   const effectiveXp = Math.round(quest.xpReward * (isCompleted ? 1 : combo));
+  const recBadge    = quest.recurrence !== 'none' ? REC_BADGE[quest.recurrence] : null;
+  const resetHint   = resetLabel(quest);
+  const catCfg      = quest.category ? CATEGORIES[quest.category] : null;
+  const catColor    = (catCfg && quest.category !== 'other') ? catCfg.color : null;
 
   const handleComplete = () => {
     haptic([10, 5, 30]);
@@ -50,10 +75,15 @@ export default function QuestCard({ quest }: { quest: Quest }) {
         display: 'flex',
         alignItems: 'stretch',
         background: isCompleted ? 'var(--bg-deep)' : 'var(--bg-card)',
-        border: `2px solid ${isCompleted ? 'var(--border)' : 'var(--border-light)'}`,
-        boxShadow: isCompleted ? 'none' : '3px 3px 0 #000',
+        border: `2px solid ${isCompleted ? 'var(--border)' : catColor ? `color-mix(in srgb, ${catColor} 45%, var(--border-light))` : 'var(--border-light)'}`,
+        boxShadow: isCompleted ? 'none' : catColor ? `3px 3px 0 #000, 0 0 12px color-mix(in srgb, ${catColor} 12%, transparent)` : '3px 3px 0 #000',
       }}
     >
+      {/* Category accent strip */}
+      {catColor && !isCompleted && (
+        <div style={{ width: 3, flexShrink: 0, background: catColor, opacity: 0.85 }} />
+      )}
+
       {/* Rank badge */}
       <div style={{
         width: 36, flexShrink: 0,
@@ -76,10 +106,29 @@ export default function QuestCard({ quest }: { quest: Quest }) {
         }}>
           {quest.title}
         </p>
-        <div style={{ display: 'flex', gap: 8, marginTop: 4, fontFamily: 'var(--font-pixel)', fontSize: '8px' }}>
+        <div style={{ display: 'flex', gap: 8, marginTop: 4, fontFamily: 'var(--font-pixel)', fontSize: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+          {catCfg && quest.category !== 'other' && (
+            <span style={{ color: catCfg.color, fontSize: 10 }}>{catCfg.icon}</span>
+          )}
           <span style={{ color: diff.color }}>{diff.label}</span>
           <span style={{ color: 'var(--purple-light)' }}>+{effectiveXp} XP</span>
           <span style={{ color: 'var(--gold)' }}>+{quest.goldReward}G</span>
+          {recBadge && (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 3,
+              padding: '1px 5px', fontSize: '6px',
+              background: isCompleted ? 'transparent' : `color-mix(in srgb, ${recBadge.color} 18%, transparent)`,
+              border: `1px solid ${recBadge.color}`,
+              color: recBadge.color,
+            }}>
+              {recBadge.icon} {recBadge.label}
+            </span>
+          )}
+          {resetHint && (
+            <span style={{ color: 'var(--text-faint)', fontSize: '6px', fontStyle: 'italic' }}>
+              ↻ {resetHint}
+            </span>
+          )}
         </div>
       </div>
 

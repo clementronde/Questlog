@@ -8,6 +8,8 @@ import { RARITY_CONFIG, CHEST_CONFIG, type EquipSlot, type ChestTier } from '../
 import { computeHeroStats, BOSS_POWER_REQ } from '../../lib/stats';
 import XPBar from './XPBar';
 import AchievementsGrid from './AchievementsGrid';
+import SkillTree from './SkillTree';
+import StatsJournal from '../stats/StatsJournal';
 
 const SLOT_LABELS: Record<EquipSlot, { label: string; empty: string }> = {
   weapon:    { label: 'ARME',       empty: '—' },
@@ -26,7 +28,7 @@ export default function CharacterSheet() {
   const buyChest        = useGameStore((s) => s.buyChest);
   const openChest       = useGameStore((s) => s.openChest);
 
-  const [invTab, setInvTab] = useState<'equipped' | 'bag' | 'chests'>('equipped');
+  const [invTab, setInvTab] = useState<'equipped' | 'bag' | 'chests' | 'skills' | 'stats'>('equipped');
 
   const cls   = character.heroClass ? CLASSES[character.heroClass] : null;
   const title = titleFromLevel(character.level);
@@ -141,7 +143,7 @@ export default function CharacterSheet() {
       >
         {/* Tabs */}
         <div style={{ display: 'flex', borderBottom: '2px solid var(--border)' }}>
-          {([['equipped', 'ÉQUIPÉ'], ['bag', `SAC (${inventory.length})`], ['chests', `COFFRES (${chests.length})`]] as const).map(([t, l]) => (
+          {([['equipped', 'ÉQUIPÉ'], ['bag', `SAC (${inventory.length})`], ['chests', `COFFRES`], ['skills', 'SKILLS'], ['stats', 'STATS']] as const).map(([t, l]) => (
             <button key={t} onClick={() => setInvTab(t)} style={{
               flex: 1, padding: '8px 0',
               fontFamily: 'var(--font-pixel)', fontSize: '5px',
@@ -289,6 +291,20 @@ export default function CharacterSheet() {
                 )}
               </motion.div>
             )}
+            {/* SKILLS */}
+            {invTab === 'skills' && (
+              <motion.div key="skills" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <SkillTree />
+              </motion.div>
+            )}
+
+            {/* STATS */}
+            {invTab === 'stats' && (
+              <motion.div key="stats" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <StatsJournal />
+              </motion.div>
+            )}
+
           </AnimatePresence>
         </div>
       </div>

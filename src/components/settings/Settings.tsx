@@ -1,10 +1,28 @@
 import { motion } from 'framer-motion';
-import { RotateCcw, Zap } from 'lucide-react';
+import { RotateCcw, Zap, Bell, BellOff } from 'lucide-react';
 import { useGameStore } from '../../store/useGameStore';
 import ThemePicker from '../character/ThemePicker';
+import { requestNotificationPermission, notificationPermission, scheduleDailyReminder } from '../../lib/notifications';
 
 export default function Settings() {
-  const character = useGameStore((s) => s.character);
+  const character              = useGameStore((s) => s.character);
+  const notificationsEnabled   = useGameStore((s) => s.notificationsEnabled);
+  const setNotificationsEnabled = useGameStore((s) => s.setNotificationsEnabled);
+  const activeQuestCount       = useGameStore((s) => s.quests.filter((q) => q.status === 'active').length);
+
+  const permission = notificationPermission();
+
+  const handleToggleNotifs = async () => {
+    if (notificationsEnabled) {
+      setNotificationsEnabled(false);
+      return;
+    }
+    const granted = await requestNotificationPermission();
+    if (granted) {
+      setNotificationsEnabled(true);
+      scheduleDailyReminder(activeQuestCount);
+    }
+  };
 
   const handleClearData = () => {
     if (window.confirm('Reset all quest data? This cannot be undone.')) {
@@ -27,6 +45,49 @@ export default function Settings() {
 
       <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px', color: 'var(--text-dim)', marginBottom: 16, marginTop: 24 }}>
         ▸ SETTINGS
+      </div>
+
+      {/* Notifications */}
+      <div
+        className="mb-4 p-3"
+        style={{
+          background: 'var(--bg-card)',
+          border: '2px solid var(--border-light)',
+          boxShadow: '3px 3px 0 var(--pixel-shadow)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--text-dim)', marginBottom: 4 }}>
+              ▸ RAPPEL QUOTIDIEN
+            </div>
+            <div style={{ fontFamily: 'var(--font-vt)', fontSize: '14px', color: 'var(--text-faint)' }}>
+              {permission === 'denied'
+                ? 'Bloqué par le navigateur'
+                : notificationsEnabled
+                  ? 'Activé · Rappel 9h'
+                  : 'Recevoir un rappel à 9h'}
+            </div>
+          </div>
+          <motion.button
+            whileTap={{ x: 2, y: 2 }}
+            onClick={handleToggleNotifs}
+            disabled={permission === 'denied'}
+            style={{
+              padding: '8px 12px',
+              background: notificationsEnabled ? 'var(--purple-dim)' : 'var(--bg-surface)',
+              border: `2px solid ${notificationsEnabled ? 'var(--purple)' : 'var(--border-light)'}`,
+              boxShadow: '2px 2px 0 #000',
+              opacity: permission === 'denied' ? 0.4 : 1,
+              display: 'flex', alignItems: 'center', gap: 6,
+              fontFamily: 'var(--font-pixel)', fontSize: '8px',
+              color: notificationsEnabled ? 'var(--purple-light)' : 'var(--text-faint)',
+            }}
+          >
+            {notificationsEnabled ? <Bell size={14} /> : <BellOff size={14} />}
+            {notificationsEnabled ? 'ON' : 'OFF'}
+          </motion.button>
+        </div>
       </div>
 
       {/* Save data */}

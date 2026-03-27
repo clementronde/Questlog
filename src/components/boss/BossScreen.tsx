@@ -48,41 +48,70 @@ function Platform({ width = 100, dark = false }: { width?: number; dark?: boolea
   );
 }
 
-// ── Compact info bar (sits above sprite) ──────────────────────────────────────
+// ── Pokémon-style info boxes ──────────────────────────────────────────────────
 
-function AvatarInfoBar({ name, hpVal, hpMax, manaVal, manaMax, rankColor }: {
-  name: string; hpVal: number; hpMax: number;
-  manaVal?: number; manaMax?: number; rankColor?: string;
+const INFO_BOX_BASE: React.CSSProperties = {
+  background: '#f0f0e8',
+  border: '3px solid #111',
+  boxShadow: '4px 4px 0 rgba(0,0,0,0.7)',
+  position: 'relative',
+  padding: '7px 10px 9px',
+};
+
+function HpBar({ pct, color }: { pct: number; color: string }) {
+  return (
+    <div style={{ height: 7, background: '#888', border: '1px solid #333', borderRadius: 0, overflow: 'hidden', position: 'relative' }}>
+      <div style={{ position: 'absolute', top: 1, left: 1, bottom: 1, width: `calc(${Math.max(0, pct) * 100}% - 2px)`, background: color, transition: 'width 0.3s ease, background 0.3s' }} />
+    </div>
+  );
+}
+
+/** Enemy info box — top-left of arena, no HP number (Pokémon style) */
+function BossInfoBox({ name, hpVal, hpMax, rankColor, rank }: {
+  name: string; hpVal: number; hpMax: number; rankColor?: string; rank?: string;
+}) {
+  const pct = Math.max(0, hpVal / hpMax);
+  const color = pct > 0.5 ? '#38c040' : pct > 0.25 ? '#f8c038' : '#e83030';
+  return (
+    <div style={{ ...INFO_BOX_BASE, width: 152 }}>
+      <div style={{ position: 'absolute', inset: 3, border: '1px solid #ccc', pointerEvents: 'none' }} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+        <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: rankColor ?? '#222', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: 110 }}>
+          {name.toUpperCase()}
+        </span>
+        {rank && <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: rankColor ?? '#555', flexShrink: 0 }}>:{rank}</span>}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+        <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: '#444', fontWeight: 700, flexShrink: 0 }}>HP</span>
+        <div style={{ flex: 1 }}><HpBar pct={pct} color={color} /></div>
+      </div>
+    </div>
+  );
+}
+
+/** Hero info box — bottom-right of arena, with HP/MP numbers */
+function HeroInfoBox({ name, hpVal, hpMax, manaVal, manaMax }: {
+  name: string; hpVal: number; hpMax: number; manaVal?: number; manaMax?: number;
 }) {
   const hpPct = Math.max(0, hpVal / hpMax);
   const mpPct = manaVal != null && manaMax ? Math.max(0, manaVal / manaMax) : null;
-  const hpColor = hpPct > 0.5 ? '#30c840' : hpPct > 0.25 ? '#f8c040' : '#f83830';
+  const hpColor = hpPct > 0.5 ? '#38c040' : hpPct > 0.25 ? '#f8c038' : '#e83030';
   return (
-    <div style={{
-      background: 'rgba(240,240,232,0.96)',
-      border: '2px solid #222',
-      padding: '6px 8px',
-      width: 140,
-      boxShadow: '3px 3px 0 rgba(0,0,0,0.6)',
-      marginBottom: 4,
-    }}>
-      <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: rankColor ?? '#333', marginBottom: 5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+    <div style={{ ...INFO_BOX_BASE, width: 164 }}>
+      <div style={{ position: 'absolute', inset: 3, border: '1px solid #ccc', pointerEvents: 'none' }} />
+      <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: '#222', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         {name.toUpperCase()}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: mpPct != null ? 3 : 0 }}>
-        <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '5px', color: '#555', flexShrink: 0 }}>PV</span>
-        <div style={{ flex: 1, height: 6, background: '#bbb', border: '1px solid #444' }}>
-          <div style={{ width: `${hpPct * 100}%`, height: '100%', background: hpColor, transition: 'width 0.25s, background 0.25s' }} />
-        </div>
-        <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '5px', color: '#333', flexShrink: 0, minWidth: 28, textAlign: 'right' }}>{hpVal}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: mpPct != null ? 4 : 0 }}>
+        <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: '#444', fontWeight: 700, flexShrink: 0 }}>HP</span>
+        <div style={{ flex: 1 }}><HpBar pct={hpPct} color={hpColor} /></div>
+        <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '5px', color: '#222', flexShrink: 0, minWidth: 32, textAlign: 'right' }}>{hpVal}/{hpMax}</span>
       </div>
       {mpPct != null && manaMax && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '5px', color: '#555', flexShrink: 0 }}>MP</span>
-          <div style={{ flex: 1, height: 4, background: '#bbb', border: '1px solid #444' }}>
-            <div style={{ width: `${mpPct * 100}%`, height: '100%', background: '#6040c0', transition: 'width 0.15s' }} />
-          </div>
-          <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '5px', color: '#333', flexShrink: 0, minWidth: 28, textAlign: 'right' }}>{Math.floor(manaVal ?? 0)}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: '#444', fontWeight: 700, flexShrink: 0 }}>MP</span>
+          <div style={{ flex: 1 }}><HpBar pct={mpPct} color='#5040c8' /></div>
+          <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '5px', color: '#222', flexShrink: 0, minWidth: 32, textAlign: 'right' }}>{Math.floor(manaVal ?? 0)}/{manaMax}</span>
         </div>
       )}
     </div>
@@ -126,32 +155,48 @@ function BattleIntro({ boss, heroIcon, heroName, cs, stats, onDone }: {
 
       <ArenaBackground />
 
-      {/* Boss column — right of center, slides from right */}
+      {/* Boss sprite — right area, slides from right */}
       <motion.div
-        initial={{ x: 240 }} animate={{ x: phase !== 'flash' ? 0 : 240 }}
+        initial={{ x: 260 }} animate={{ x: phase !== 'flash' ? 0 : 260 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
-        style={{ position: 'absolute', left: 'calc(50% + 16px)', bottom: '8%', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 3 }}
+        style={{ position: 'absolute', right: '8%', bottom: '12%', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 3 }}
       >
-        <AvatarInfoBar name={boss.name} hpVal={boss.currentHp} hpMax={boss.maxHp} rankColor={boss.rankColor} />
         <motion.div
-          animate={phase === 'scene' || phase === 'text1' || phase === 'text2' ? { y: [0, -6, 0] } : {}}
-          transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ fontSize: 64, lineHeight: 1, filter: 'drop-shadow(2px 4px 0 rgba(0,0,0,0.5))', marginBottom: 2 }}
+          animate={phase === 'scene' || phase === 'text1' || phase === 'text2' ? { y: [0, -7, 0] } : {}}
+          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ fontSize: 72, lineHeight: 1, filter: 'drop-shadow(3px 5px 0 rgba(0,0,0,0.55))', marginBottom: 2 }}
         >{boss.icon}</motion.div>
         <Platform width={100} />
       </motion.div>
 
-      {/* Hero column — left of center, slides from left */}
+      {/* Boss info box — top left, slides from left */}
       <motion.div
-        initial={{ x: -240 }} animate={{ x: phase !== 'flash' ? 0 : -240 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.08 }}
-        style={{ position: 'absolute', left: 'calc(50% - 156px)', bottom: '0%', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 3 }}
+        initial={{ x: -200 }} animate={{ x: phase === 'text1' || phase === 'text2' ? 0 : -200 }}
+        transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+        style={{ position: 'absolute', top: 10, left: 10, zIndex: 5 }}
       >
-        <AvatarInfoBar name={heroName} hpVal={cs.playerHp} hpMax={stats.hp} manaVal={cs.mana} manaMax={stats.manaMax} />
-        <motion.div className="px-walk" style={{ fontSize: 56, lineHeight: 1, filter: 'drop-shadow(2px 3px 0 rgba(0,0,0,0.4))', marginBottom: 2 }}>
+        <BossInfoBox name={boss.name} hpVal={boss.currentHp} hpMax={boss.maxHp} rankColor={boss.rankColor} rank={boss.rank} />
+      </motion.div>
+
+      {/* Hero sprite — left area, slides from left */}
+      <motion.div
+        initial={{ x: -260 }} animate={{ x: phase !== 'flash' ? 0 : -260 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.08 }}
+        style={{ position: 'absolute', left: '8%', bottom: '2%', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 3 }}
+      >
+        <motion.div className="px-walk" style={{ fontSize: 60, lineHeight: 1, filter: 'drop-shadow(2px 4px 0 rgba(0,0,0,0.45))', marginBottom: 2 }}>
           {heroIcon}
         </motion.div>
         <Platform width={110} dark />
+      </motion.div>
+
+      {/* Hero info box — bottom right, slides from right */}
+      <motion.div
+        initial={{ x: 200 }} animate={{ x: phase === 'text2' ? 0 : 200 }}
+        transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+        style={{ position: 'absolute', bottom: 90, right: 10, zIndex: 5 }}
+      >
+        <HeroInfoBox name={heroName} hpVal={cs.playerHp} hpMax={stats.hp} manaVal={cs.mana} manaMax={stats.manaMax} />
       </motion.div>
 
       {/* Dialog box */}
@@ -429,61 +474,84 @@ function CombatScreen({ boss, stats, powers, heroIcon, heroName, onExit }: {
       </AnimatePresence>
 
       {/* ── ARENA ── */}
-      <div style={{ flex: '0 0 54%', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ flex: '0 0 55%', position: 'relative', overflow: 'hidden' }}>
         <ArenaBackground />
 
         {/* Exit */}
-        <button onClick={onExit} style={{ position: 'absolute', top: 8, left: 10, zIndex: 5, fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'rgba(255,255,255,0.75)', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.2)', padding: '4px 8px' }}>
+        <button onClick={onExit} style={{ position: 'absolute', top: 8, left: 10, zIndex: 6, fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'rgba(255,255,255,0.8)', background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.25)', padding: '4px 8px' }}>
           ◀ QUITTER
         </button>
 
-        {/* Boss column — right of center */}
+        {/* ── Boss info box — TOP LEFT corner ── */}
         <motion.div
-          animate={cs.bossAnim === 'attack' ? { x: [0, -14, 0] } : cs.bossAnim === 'hit' ? { x: [10, 0], opacity: [0.4, 1] } : cs.bossAnim === 'dead' ? { rotate: 90, opacity: 0.3 } : { x: 0 }}
-          style={{ position: 'absolute', left: 'calc(50% + 16px)', bottom: '8%', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 3 }}
+          initial={{ x: -200 }} animate={{ x: 0 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+          style={{ position: 'absolute', top: 10, left: 10, zIndex: 5 }}
         >
-          <AvatarInfoBar name={boss.name} hpVal={cs.bossHp} hpMax={boss.maxHp} rankColor={boss.rankColor} />
-          <div style={{ fontSize: 58, lineHeight: 1, filter: 'drop-shadow(2px 4px 0 rgba(0,0,0,0.5))', marginBottom: 2 }}>
-            {cs.bossAnim === 'dead' ? '💀' : boss.icon}
-          </div>
-          <Platform width={100} />
+          <BossInfoBox name={boss.name} hpVal={cs.bossHp} hpMax={boss.maxHp} rankColor={boss.rankColor} rank={boss.rank} />
         </motion.div>
 
-        {/* Hero column — left of center */}
+        {/* ── Boss sprite — upper RIGHT ── */}
         <motion.div
-          animate={cs.heroAnim === 'attack' ? { x: [0, 14, 0] } : cs.heroAnim === 'hit' ? { x: [-8, 0], opacity: [0.4, 1] } : { x: 0 }}
+          animate={
+            cs.bossAnim === 'attack' ? { x: [0, -18, 0] } :
+            cs.bossAnim === 'hit'    ? { x: [14, 0], opacity: [0.35, 1] } :
+            cs.bossAnim === 'dead'   ? { rotate: 20, opacity: 0.25, y: 12 } :
+            { x: 0 }
+          }
+          style={{ position: 'absolute', right: '10%', bottom: '16%', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 3 }}
+        >
+          <div style={{ fontSize: 74, lineHeight: 1, filter: 'drop-shadow(3px 5px 0 rgba(0,0,0,0.55))', marginBottom: 2 }}>
+            {cs.bossAnim === 'dead' ? '💀' : boss.icon}
+          </div>
+          <Platform width={96} />
+        </motion.div>
+
+        {/* ── Hero sprite — lower LEFT ── */}
+        <motion.div
+          animate={
+            cs.heroAnim === 'attack' ? { x: [0, 18, 0] } :
+            cs.heroAnim === 'hit'    ? { x: [-10, 0], opacity: [0.35, 1] } :
+            { x: 0 }
+          }
           style={{
-            position: 'absolute', left: 'calc(50% - 156px)', bottom: '0%',
+            position: 'absolute', left: '8%', bottom: '3%',
             display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 3,
-            filter: cs.result === 'lose' ? 'grayscale(1)' : undefined,
+            filter: cs.result === 'lose' ? 'grayscale(1) opacity(0.5)' : undefined,
           }}
         >
-          <AvatarInfoBar name={heroName} hpVal={cs.playerHp} hpMax={stats.hp} manaVal={cs.mana} manaMax={stats.manaMax} />
-          <div style={{ fontSize: 52, lineHeight: 1, filter: 'drop-shadow(2px 3px 0 rgba(0,0,0,0.4))', marginBottom: 2 }}>
+          <div style={{ fontSize: 62, lineHeight: 1, filter: 'drop-shadow(2px 4px 0 rgba(0,0,0,0.45))', marginBottom: 2 }}>
             {heroIcon}
           </div>
           <Platform width={110} dark />
+        </motion.div>
+
+        {/* ── Hero info box — BOTTOM RIGHT corner ── */}
+        <motion.div
+          initial={{ x: 200 }} animate={{ x: 0 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.18 }}
+          style={{ position: 'absolute', bottom: 8, right: 8, zIndex: 5 }}
+        >
+          <HeroInfoBox name={heroName} hpVal={cs.playerHp} hpMax={stats.hp} manaVal={cs.mana} manaMax={stats.manaMax} />
         </motion.div>
 
         {/* Floating damage numbers */}
         <AnimatePresence>
           {floats.map((f) => (
             <motion.div key={f.id}
-              initial={{ opacity: 1, y: 0, scale: 1 }}
-              animate={{ opacity: 0, y: -55, scale: 1.1 }}
+              initial={{ opacity: 1, y: 0, scale: 0.85 }}
+              animate={{ opacity: 0, y: -60, scale: 1.15 }}
               exit={{}}
               transition={{ duration: 1.15, ease: 'easeOut' }}
               style={{
                 position: 'absolute',
-                left: f.side === 'boss' ? 'calc(50% + 20px)' : 'calc(50% - 150px)',
-                bottom: '52%',
+                left: f.side === 'boss' ? '55%' : '16%',
+                bottom: '48%',
                 fontFamily: 'var(--font-pixel)',
-                fontSize: f.text.includes('CRIT') || f.text.includes('VICTOIRE') ? '12px' : '10px',
+                fontSize: f.text.includes('CRIT') || f.text.includes('VICTOIRE') ? '13px' : '10px',
                 color: f.color,
                 textShadow: '1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000',
-                whiteSpace: 'nowrap',
-                zIndex: 10,
-                pointerEvents: 'none',
+                whiteSpace: 'nowrap', zIndex: 10, pointerEvents: 'none',
               }}
             >
               {f.text}
@@ -491,69 +559,103 @@ function CombatScreen({ boss, stats, powers, heroIcon, heroName, onExit }: {
           ))}
         </AnimatePresence>
 
-        {/* Buffs */}
-        <div style={{ position: 'absolute', bottom: 6, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 5, zIndex: 4 }}>
-          {now < cs.atkBuffEnds && <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--orange)', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--orange)', padding: '2px 5px' }}>ATK ×{cs.atkBuff}</span>}
-          {cs.shieldHits > 0 && <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--blue)', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--blue)', padding: '2px 5px' }}>🛡 ×{cs.shieldHits}</span>}
-          {now < cs.invulEnds && <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--gold)', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--gold)', padding: '2px 5px' }}>INVUL</span>}
+        {/* Buff badges (center bottom of arena) */}
+        <div style={{ position: 'absolute', bottom: 6, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 4, zIndex: 4 }}>
+          {now < cs.atkBuffEnds && <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: 'var(--orange)', background: 'rgba(0,0,0,0.55)', border: '1px solid var(--orange)', padding: '2px 5px' }}>ATK ×{cs.atkBuff}</span>}
+          {cs.shieldHits > 0 && <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: 'var(--blue)', background: 'rgba(0,0,0,0.55)', border: '1px solid var(--blue)', padding: '2px 5px' }}>🛡 ×{cs.shieldHits}</span>}
+          {now < cs.invulEnds && <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: 'var(--gold)', background: 'rgba(0,0,0,0.55)', border: '1px solid var(--gold)', padding: '2px 5px' }}>INVUL</span>}
         </div>
       </div>
 
-      {/* ── Below arena ── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '8px 12px 10px', background: 'var(--bg-deep)', overflow: 'hidden', gap: 6 }}>
+      {/* ── BOTTOM PANEL — Pokémon dialog / action menu ── */}
+      <div style={{ flex: 1, background: '#f0f0e8', border: '4px solid #111', borderLeft: 'none', borderRight: 'none', borderBottom: 'none', position: 'relative', display: 'flex', overflow: 'hidden' }}>
+        {/* Inner inset border */}
+        <div style={{ position: 'absolute', inset: 6, border: '2px solid #aaa', pointerEvents: 'none', zIndex: 0 }} />
 
-        {/* Result banner */}
-        <AnimatePresence>
-          {cs.result && (
-            <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
-              style={{ textAlign: 'center', padding: '10px 12px', background: cs.result === 'win' ? 'rgba(255,215,0,0.12)' : 'rgba(255,68,68,0.12)', border: `2px solid ${cs.result === 'win' ? 'var(--gold)' : 'var(--red)'}`, boxShadow: '3px 3px 0 #000' }}
+        <AnimatePresence mode="wait">
+          {cs.result ? (
+            /* ── Result screen ── */
+            <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '12px 20px', position: 'relative', zIndex: 1 }}
             >
-              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '13px', color: cs.result === 'win' ? 'var(--gold)' : 'var(--red)', marginBottom: 5 }}>
+              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '14px', color: cs.result === 'win' ? '#b07800' : '#cc2222', textShadow: '2px 2px 0 rgba(0,0,0,0.15)' }}>
                 {cs.result === 'win' ? '🏆 VICTOIRE!' : '💀 DÉFAITE'}
               </div>
               {cs.result === 'win' && (
-                <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--text-dim)', marginBottom: 8 }}>
-                  +{boss.reward.xp} XP · +{boss.reward.gold} G · {CHEST_CONFIG[boss.reward.chest].icon}
+                <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: '#555', textAlign: 'center', lineHeight: 2 }}>
+                  +{boss.reward.xp} XP · +{boss.reward.gold} G · {CHEST_CONFIG[boss.reward.chest].icon} REÇU
                 </div>
               )}
-              <button onClick={onExit} style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', padding: '7px 16px', background: 'var(--purple)', border: '2px solid var(--purple-light)', color: '#fff', boxShadow: '3px 3px 0 #000' }}>
+              <button onClick={onExit} style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', padding: '8px 18px', background: '#222', border: '2px solid #111', color: '#f0f0e8', boxShadow: '3px 3px 0 #888' }}>
                 ◀ RETOUR
               </button>
             </motion.div>
+          ) : (
+            /* ── Action menu ── */
+            <div key="actions" style={{ flex: 1, display: 'flex', position: 'relative', zIndex: 1 }}>
+              {/* Left: dialog prompt */}
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', padding: '14px 18px' }}>
+                <p style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px', color: '#111', lineHeight: 2, margin: 0 }}>
+                  Que doit faire<br />{heroName.toUpperCase()} ?
+                </p>
+              </div>
+
+              {/* Divider */}
+              <div style={{ width: 3, background: '#111', alignSelf: 'stretch' }} />
+
+              {/* Right: 2×2 power grid */}
+              <div style={{ width: 188, display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr' }}>
+                {powers.slice(0, 4).map((p, i) => {
+                  const cd    = cs.powerCooldowns[p.id] ?? 0;
+                  const onCd  = now < cd;
+                  const noMp  = cs.mana < p.manaCost;
+                  const off   = onCd || noMp;
+                  const cdSec = Math.ceil((cd - now) / 1000);
+                  const isRight = i % 2 === 1;
+                  const isBottom = i >= 2;
+                  return (
+                    <motion.button key={p.id}
+                      whileTap={!off ? { scale: 0.93 } : {}}
+                      onClick={() => usePower(p)}
+                      style={{
+                        padding: '6px 8px',
+                        background: off ? 'transparent' : 'transparent',
+                        borderTop: 'none', borderBottom: 'none',
+                        borderLeft: isRight ? '2px solid #111' : 'none',
+                        borderRight: 'none',
+                        borderTopWidth: isBottom ? 2 : 0,
+                        borderTopStyle: isBottom ? 'solid' : undefined,
+                        borderTopColor: isBottom ? '#111' : undefined,
+                        opacity: off ? 0.45 : 1,
+                        position: 'relative',
+                        display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center',
+                        gap: 2,
+                        cursor: off ? 'default' : 'pointer',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <span style={{ fontSize: 18, lineHeight: 1 }}>{p.icon}</span>
+                        <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: off ? '#888' : '#111', lineHeight: 1.3 }}>
+                          {p.name.toUpperCase()}
+                        </span>
+                      </div>
+                      <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: onCd ? '#c44' : noMp ? '#aaa' : '#5040a0', paddingLeft: 2 }}>
+                        {onCd ? `⏱ ${cdSec}s` : `${p.manaCost} MP`}
+                      </span>
+                      {/* Active type color strip on left */}
+                      <div style={{ position: 'absolute', left: 0, top: 6, bottom: 6, width: 3, background: off ? 'transparent' : p.color }} />
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
           )}
         </AnimatePresence>
 
-        {/* Powers */}
+        {/* Blinking arrow (only in action menu) */}
         {!cs.result && (
-          <div style={{ display: 'flex', gap: 6, flex: 1, alignItems: 'stretch' }}>
-            {powers.map((p) => {
-              const cd   = cs.powerCooldowns[p.id] ?? 0;
-              const onCd = now < cd;
-              const noMp = cs.mana < p.manaCost;
-              const off  = onCd || noMp;
-              const cdSec = Math.ceil((cd - now) / 1000);
-              return (
-                <motion.button key={p.id} whileTap={!off ? { scale: 0.92 } : {}} onClick={() => usePower(p)}
-                  style={{ flex: 1, padding: '8px 4px', textAlign: 'center', position: 'relative', background: off ? 'var(--bg-card)' : `${p.color}22`, border: `2px solid ${off ? 'var(--border)' : p.color}`, boxShadow: off ? 'none' : '2px 2px 0 #000', opacity: off ? 0.5 : 1 }}
-                >
-                  <div style={{ fontSize: 22, lineHeight: 1, marginBottom: 4 }}>{p.icon}</div>
-                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: off ? 'var(--text-faint)' : p.color, lineHeight: 1.4 }}>{p.name}</div>
-                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--text-faint)', marginTop: 2 }}>{onCd ? `${cdSec}s` : `${p.manaCost}MP`}</div>
-                  {onCd && (
-                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '12px', color: '#fff' }}>{cdSec}s</span>
-                    </div>
-                  )}
-                </motion.button>
-              );
-            })}
-          </div>
+          <span className="px-blink" style={{ position: 'absolute', bottom: 10, left: 20, fontFamily: 'var(--font-pixel)', fontSize: '11px', color: '#333', zIndex: 2 }}>▶</span>
         )}
-
-        {/* Boss HP summary bar */}
-        <div style={{ height: 6, background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-          <motion.div animate={{ width: `${bHpPct * 100}%` }} transition={{ duration: 0.3 }} style={{ height: '100%', background: bHpPct > 0.5 ? 'var(--red)' : bHpPct > 0.25 ? 'var(--orange)' : 'var(--gold)' }} />
-        </div>
       </div>
     </div>
   );
