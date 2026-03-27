@@ -234,8 +234,6 @@ function HeroBackground({ mouseX, mouseY, heroRef }: {
   const goldY    = useTransform(mouseY, (v) => v * -16);
   const blueX    = useTransform(mouseX, (v) => v * -18);
   const blueY    = useTransform(mouseY, (v) => v * -13);
-  const beamX    = useTransform(mouseX, (v) => v *  9);
-
   return (
     <>
       {/* Deep atmospheric gradient — static, deepest layer */}
@@ -307,14 +305,6 @@ function HeroBackground({ mouseX, mouseY, heroRef }: {
         ))}
       </motion.div>
 
-      {/* Vertical beam — slight horizontal parallax */}
-      <motion.div style={{
-        x: beamX,
-        position: 'absolute', top: 0, left: '50%', translateX: '-50%',
-        width: 1, height: '40%',
-        background: 'linear-gradient(180deg, transparent 0%, rgba(187,134,252,0.55) 100%)',
-        pointerEvents: 'none',
-      }} />
 
       {/* Pixel grid hover effect */}
       <PixelGridCanvas heroRef={heroRef} />

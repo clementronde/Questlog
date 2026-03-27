@@ -2,7 +2,7 @@
 -- Run this in your Supabase project → SQL Editor
 
 create table if not exists leaderboard (
-  player_id     text primary key,          -- local UUID, never changes
+  player_id     text primary key,          -- = auth.uid()
   username      text unique not null,
   level         int  not null default 1,
   total_xp      int  not null default 0,
@@ -23,15 +23,15 @@ create policy "Public read"
   on leaderboard for select
   using (true);
 
--- Anyone can insert a new player row (player_id is client-generated UUID)
-create policy "Public insert"
+-- Only authenticated users can insert their own row
+create policy "Own insert"
   on leaderboard for insert
-  with check (true);
+  with check (auth.uid()::text = player_id);
 
--- Players can only update their own row (matched by player_id)
+-- Only authenticated users can update their own row
 create policy "Own update"
   on leaderboard for update
-  using (player_id = player_id);
+  using (auth.uid()::text = player_id);
 
 -- Enable real-time on this table
 alter publication supabase_realtime add table leaderboard;

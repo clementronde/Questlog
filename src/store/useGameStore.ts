@@ -136,6 +136,7 @@ export interface GameState {
   // UI / theme / leaderboard
   setTheme: (id: string) => void;
   setUsername: (name: string) => void;
+  initPlayer: (userId: string) => void;
   syncLeaderboard: () => Promise<void>;
   dismissLevelUp: () => void;
   dismissInstall: () => void;
@@ -489,13 +490,17 @@ export const useGameStore = create<GameState>()(
       dismissInstall()  { set({ installDismissed: true }); },
       setTheme(id)      { set({ themeId: id }); },
       setUsername(name) { set({ username: name.trim() }); },
+      initPlayer(userId) {
+        if (get().playerId !== userId) set({ playerId: userId });
+      },
 
       async syncLeaderboard() {
         const { character, quests, playerId, username, themeId } = get();
-        if (!username) return;
+        // Fallback: use playerId prefix so every player appears from day 1
+        const effectiveUsername = username ?? `player-${playerId.slice(0, 8)}`;
         await syncPlayer({
           player_id:   playerId,
-          username,
+          username:    effectiveUsername,
           level:       character.level,
           total_xp:    character.totalXp,
           quests_done: quests.filter((q) => q.status === 'completed').length,

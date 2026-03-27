@@ -54,3 +54,33 @@ export async function isUsernameTaken(username: string): Promise<boolean> {
     .eq('username', username.trim());
   return (count ?? 0) > 0;
 }
+
+// ─── Auth helpers ─────────────────────────────────────────────────────────────
+
+export async function authSignUp(email: string, password: string) {
+  if (!supabase) throw new Error('Supabase non configuré');
+  const { data, error } = await supabase.auth.signUp({ email, password });
+  if (error) throw error;
+  return data;
+}
+
+export async function authSignIn(email: string, password: string) {
+  if (!supabase) throw new Error('Supabase non configuré');
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  return data;
+}
+
+export async function authGetSession() {
+  if (!supabase) return null;
+  const { data } = await supabase.auth.getSession();
+  return data.session;
+}
+
+export function authOnChange(cb: (userId: string | null) => void): () => void {
+  if (!supabase) return () => {};
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+    cb(session?.user.id ?? null);
+  });
+  return () => subscription.unsubscribe();
+}

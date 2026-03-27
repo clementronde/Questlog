@@ -6,11 +6,12 @@ import CharacterSheet from '../character/CharacterSheet';
 import BossScreen from '../boss/BossScreen';
 import RewardShop from '../shop/RewardShop';
 import Settings from '../settings/Settings';
+import Leaderboard from '../leaderboard/Leaderboard';
 import PWAInstallBanner from '../ui/PWAInstallBanner';
 
-export type TabId = 'quests' | 'character' | 'dungeon' | 'shop' | 'settings';
+export type TabId = 'quests' | 'character' | 'dungeon' | 'leaderboard' | 'settings';
 
-const TAB_ORDER: TabId[] = ['quests', 'character', 'dungeon', 'shop', 'settings'];
+const TAB_ORDER: TabId[] = ['quests', 'character', 'dungeon', 'leaderboard', 'settings'];
 
 const variants = {
   enter: (dir: number) => ({ x: dir > 0 ? '40%' : '-40%', opacity: 0 }),
@@ -59,11 +60,11 @@ export default function AppShell() {
               paddingBottom: '4.5rem',
             }}
           >
-            {activeTab === 'quests'    && <QuestBoard />}
-            {activeTab === 'character' && <CharacterSheet />}
-            {activeTab === 'dungeon'   && <BossScreen />}
-            {activeTab === 'shop'      && <RewardShop />}
-            {activeTab === 'settings'  && <Settings />}
+            {activeTab === 'quests'      && <QuestBoard />}
+            {activeTab === 'character'   && <CharacterSheet />}
+            {activeTab === 'dungeon'     && <BossScreen />}
+            {activeTab === 'leaderboard' && <Leaderboard />}
+            {activeTab === 'settings'    && <Settings />}
           </motion.div>
         </AnimatePresence>
       </div>

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Sword, User, Skull, ShoppingBag, Settings } from 'lucide-react';
+import { Sword, User, Skull, Trophy, Settings } from 'lucide-react';
 import type { TabId } from './AppShell';
 
 const TABS: {
@@ -7,11 +7,11 @@ const TABS: {
   label: string;
   Icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
 }[] = [
-  { id: 'quests',    label: 'QUÊTES',  Icon: Sword },
-  { id: 'character', label: 'HÉROS',   Icon: User },
-  { id: 'dungeon',   label: 'DONJON',  Icon: Skull },
-  { id: 'shop',      label: 'SHOP',    Icon: ShoppingBag },
-  { id: 'settings',  label: 'OPTIONS', Icon: Settings },
+  { id: 'quests',      label: 'QUÊTES',  Icon: Sword },
+  { id: 'character',   label: 'HÉROS',   Icon: User },
+  { id: 'dungeon',     label: 'DONJON',  Icon: Skull },
+  { id: 'leaderboard', label: 'TOP',     Icon: Trophy },
+  { id: 'settings',    label: 'OPTIONS', Icon: Settings },
 ];
 
 interface Props {
