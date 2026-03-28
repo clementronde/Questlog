@@ -1154,7 +1154,7 @@ export default function LandingPage({ onEnter }: Props) {
                 { label: '+48% COMPLÉTION', color: 'var(--green)' },
                 { label: 'STREAKS MOTIVANTS', color: 'var(--gold)' },
                 { label: 'RÉCOMPENSES RÉELLES', color: 'var(--purple-light)' },
-                { label: '0 TÂCHE OUBLIÉE', color: 'var(--blue)' },
+                { label: 'SANS PÉNALITÉ', color: 'var(--cyan)' },
               ].map((b) => (
                 <div key={b.label} style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: b.color, padding: '5px 10px', border: `1px solid ${b.color}`, background: 'rgba(0,0,0,0.3)' }}>
                   {b.label}
@@ -1324,6 +1324,35 @@ export default function LandingPage({ onEnter }: Props) {
               ].map((item, i) => (
                 <span key={i} style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: item.color, opacity: item.dim ? 0.45 : 1 }}>{item.label}</span>
               ))}
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* DIFFERENTIATORS */}
+      <section style={{ padding: '0 24px 60px' }}>
+        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+          <FadeIn>
+            <div style={{ background: 'var(--bg-card)', border: '2px solid var(--border-light)', boxShadow: '4px 4px 0 #000', padding: '24px 28px' }}>
+              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)', marginBottom: 20 }}>▸ POURQUOI C'EST DIFFÉRENT DES AUTRES APPS</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+                {[
+                  { icon: '🚫', label: 'SANS PÉNALITÉ', color: 'var(--green)', desc: 'Pas de HP qui baisse. Pas de punition. Juste des gains — toujours.' },
+                  { icon: '🎯', label: 'TES RÉCOMPENSES', color: 'var(--gold)', desc: 'Tu définis toi-même ce que tu veux débloquer. Pas des badges génériques.' },
+                  { icon: '⚡', label: 'SIMPLE & RAPIDE', color: 'var(--purple-light)', desc: 'Ajouter une quête en 10 secondes. Pas 5 menus. Pas de tutorial obligatoire.' },
+                  { icon: '📱', label: 'INSTALLABLE', color: 'var(--cyan)', desc: 'PWA. Fonctionne sur mobile comme une app native. Gratuit. Aucune inscription obligatoire.' },
+                ].map((d, i) => (
+                  <FadeIn key={d.label} delay={i * 0.08}>
+                    <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                      <div style={{ fontSize: 20, flexShrink: 0 }}>{d.icon}</div>
+                      <div>
+                        <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: d.color, marginBottom: 6 }}>{d.label}</div>
+                        <p style={{ fontFamily: 'var(--font-vt)', fontSize: '17px', color: 'var(--text-dim)', lineHeight: 1.5, margin: 0 }}>{d.desc}</p>
+                      </div>
+                    </div>
+                  </FadeIn>
+                ))}
+              </div>
             </div>
           </FadeIn>
         </div>
