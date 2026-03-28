@@ -381,12 +381,42 @@ export const useGameStore = create<GameState>()(
 
       // ── Class & equipment ──────────────────────────────────────────────────
       selectClass(cls) {
-        const { character, chests } = get();
+        const { character, chests, quests } = get();
         const startTier = CLASSES[cls].startingChest;
         set({
           character: { ...character, heroClass: cls },
           chests: [...chests, { instanceId: uid(), tier: startTier }],
         });
+        // Seed starter quests for brand-new players (blank board)
+        if (quests.length === 0) {
+          const starterQuests: Quest[] = [
+            {
+              id: uid(), title: 'Faire 30 min de sport', difficulty: 'easy',
+              status: 'active', recurrence: 'daily', category: 'sport',
+              createdAt: new Date().toISOString(),
+              xpReward: XP_WEIGHTS.easy, goldReward: xpToGold(XP_WEIGHTS.easy),
+            },
+            {
+              id: uid(), title: 'Lire 20 pages', difficulty: 'easy',
+              status: 'active', recurrence: 'daily', category: 'learning',
+              createdAt: new Date().toISOString(),
+              xpReward: XP_WEIGHTS.easy, goldReward: xpToGold(XP_WEIGHTS.easy),
+            },
+            {
+              id: uid(), title: 'Finir une tâche du boulot', difficulty: 'medium',
+              status: 'active', recurrence: 'none', category: 'work',
+              createdAt: new Date().toISOString(),
+              xpReward: XP_WEIGHTS.medium, goldReward: xpToGold(XP_WEIGHTS.medium),
+            },
+            {
+              id: uid(), title: 'Lancer un projet perso', difficulty: 'hard',
+              status: 'active', recurrence: 'none', category: 'creative',
+              createdAt: new Date().toISOString(),
+              xpReward: XP_WEIGHTS.hard, goldReward: xpToGold(XP_WEIGHTS.hard),
+            },
+          ];
+          set((s) => ({ quests: [...starterQuests, ...s.quests] }));
+        }
       },
 
       equipItem(instanceId) {

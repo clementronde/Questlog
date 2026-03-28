@@ -229,12 +229,19 @@ export default function QuestBoard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center py-12 gap-4"
+            className="flex flex-col items-center justify-center py-10 gap-3"
           >
-            <div style={{ fontSize: '32px' }}>⚔️</div>
-            <p style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)', textAlign: 'center', lineHeight: 2 }}>
-              NO ACTIVE QUESTS<br />
-              <span style={{ color: 'var(--text-dim)' }}>PRESS ＋ TO BEGIN</span>
+            <motion.div
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ fontSize: '36px' }}
+            >⚔️</motion.div>
+            <p style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)', textAlign: 'center', lineHeight: 2.2 }}>
+              BOARD VIDE<br />
+              <span style={{ color: 'var(--purple-light)' }}>CRÉE TA PREMIÈRE QUÊTE ＋</span>
+            </p>
+            <p style={{ fontFamily: 'var(--font-vt)', fontSize: '16px', color: 'var(--text-faint)', textAlign: 'center', lineHeight: 1.6, maxWidth: 220 }}>
+              Chaque tâche complétée = XP + Gold. Lance-toi.
             </p>
           </motion.div>
         )}
