@@ -320,27 +320,53 @@ const DEMO_QUESTS = [
   { title: 'Lire 20 pages',          rank: 'E', color: '#888',          xp: 10 },
 ];
 
+const COMBO_MSGS = ['', 'COMBO x2 🔥', 'COMBO x3 ⚡', 'ALL CLEAR! 🏆'];
+
 function LiveQuestDemo() {
   const [completed, setCompleted] = useState<number[]>([]);
   const [xpFloats, setXpFloats]   = useState<{ id: number; xp: number; y: number }[]>([]);
+  const totalXp = completed.reduce((acc, i) => acc + DEMO_QUESTS[i].xp * (i + 1 >= 2 ? i : 1), 0);
+  const comboCount = completed.length;
 
   const complete = (i: number, xp: number) => {
     if (completed.includes(i)) return;
     setCompleted((c) => [...c, i]);
+    const multiplier = completed.length >= 1 ? completed.length + 1 : 1;
     const id = Date.now();
-    setXpFloats((f) => [...f, { id, xp, y: i }]);
-    setTimeout(() => setXpFloats((f) => f.filter((x) => x.id !== id)), 1200);
+    setXpFloats((f) => [...f, { id, xp: xp * multiplier, y: i }]);
+    setTimeout(() => setXpFloats((f) => f.filter((x) => x.id !== id)), 1300);
   };
 
   return (
     <div style={{ position: 'relative' }}>
+      {/* Combo / XP bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, padding: '8px 12px', background: 'var(--bg-card)', border: '2px solid var(--border-light)', boxShadow: '2px 2px 0 #000' }}>
+        <div>
+          <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--text-faint)', marginBottom: 3 }}>XP GAGNÉ</div>
+          <motion.div key={totalXp} initial={{ scale: 1.4, color: '#fff' }} animate={{ scale: 1, color: 'var(--purple-light)' }} transition={{ duration: 0.3 }}
+            style={{ fontFamily: 'var(--font-pixel)', fontSize: '14px' }}>
+            +{totalXp} XP
+          </motion.div>
+        </div>
+        <AnimatePresence mode="wait">
+          {comboCount >= 2 && (
+            <motion.div key={comboCount}
+              initial={{ opacity: 0, scale: 0.7, y: 6 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: comboCount >= 3 ? '10px' : '9px', color: comboCount >= 3 ? 'var(--gold)' : 'var(--orange)', textShadow: '1px 1px 0 #000' }}>
+              {COMBO_MSGS[Math.min(comboCount, COMBO_MSGS.length - 1)]}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
       {/* XP floats */}
       <AnimatePresence>
         {xpFloats.map((f) => (
           <motion.div key={f.id}
             initial={{ opacity: 1, y: 0 }} animate={{ opacity: 0, y: -50 }} exit={{}}
             transition={{ duration: 1.1 }}
-            style={{ position: 'absolute', right: 50, top: f.y * 52 + 10, fontFamily: 'var(--font-pixel)', fontSize: '10px', color: 'var(--purple-light)', textShadow: '1px 1px 0 #000', pointerEvents: 'none', zIndex: 10, whiteSpace: 'nowrap' }}
+            style={{ position: 'absolute', right: 50, top: f.y * 56 + 30, fontFamily: 'var(--font-pixel)', fontSize: '10px', color: 'var(--purple-light)', textShadow: '1px 1px 0 #000', pointerEvents: 'none', zIndex: 10, whiteSpace: 'nowrap' }}
           >
             +{f.xp} XP ✨
           </motion.div>
@@ -365,7 +391,7 @@ function LiveQuestDemo() {
             </div>
             <div style={{ flex: 1, padding: '8px 10px' }}>
               <div style={{ fontFamily: 'var(--font-vt)', fontSize: '18px', color: done ? 'var(--text-faint)' : 'var(--text)', textDecoration: done ? 'line-through' : 'none', lineHeight: 1 }}>{q.title}</div>
-              <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: 'var(--purple-light)' }}>+{q.xp} XP</span>
+              <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '6px', color: 'var(--purple-light)' }}>+{q.xp} XP · {completed.length >= 1 && !done ? `x${completed.length + 1} COMBO` : ''}</span>
             </div>
             <button
               onClick={() => complete(i, q.xp)}
@@ -378,8 +404,9 @@ function LiveQuestDemo() {
       })}
 
       {completed.length === DEMO_QUESTS.length && (
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ textAlign: 'center', padding: '12px 0', fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--gold)' }}>
-          🏆 ALL QUESTS CLEARED! +{DEMO_QUESTS.reduce((a, q) => a + q.xp, 0)} XP
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+          style={{ textAlign: 'center', padding: '12px 0', fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--gold)', textShadow: '1px 1px 0 #000' }}>
+          🏆 ALL QUESTS CLEARED! · STREAK +1 · GOLD +{Math.round(totalXp * 0.3)}💰
         </motion.div>
       )}
     </div>
@@ -1103,9 +1130,14 @@ export default function LandingPage({ onEnter }: Props) {
               <div className="lp-title-line" style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(32px, 9vw, 56px)', color: 'var(--purple-light)', lineHeight: 1.2, textShadow: '4px 4px 0 rgba(123,47,255,0.4), 8px 8px 0 #000' }}>LOG</div>
             </motion.div>
 
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.28 }}
+              style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--purple-light)', letterSpacing: 2, marginBottom: 16, textAlign: 'center' }}>
+              LA TO-DO LIST QUI FONCTIONNE COMME UN JEU DE RÔLE
+            </motion.div>
+
             <motion.p className="lp-hero-subtitle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
               style={{ fontFamily: 'var(--font-vt)', fontSize: 'clamp(20px, 5vw, 28px)', color: 'var(--text-dim)', textAlign: 'center', maxWidth: 520, lineHeight: 1.4, marginBottom: 40 }}>
-              Tu en as marre de te fixer des objectifs que tu n'atteins jamais ? Ton cerveau n'est pas flemmard — ta to-do list est juste ennuyeuse.
+              Ajoute tes tâches, gagne XP & or, monte de niveau. Et dépense ton or sur tes vraies récompenses. Ton cerveau adore ça.
             </motion.p>
 
             <motion.div className="lp-hero-cta-row" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -1229,6 +1261,69 @@ export default function LandingPage({ onEnter }: Props) {
                   </div>
                 ))}
               </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section style={{ padding: '60px 24px', borderTop: '2px solid rgba(123,47,255,0.15)' }}>
+        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+          <FadeIn>
+            <div style={{ textAlign: 'center', marginBottom: 48 }}>
+              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--purple-light)', marginBottom: 8 }}>▸ COMMENT ÇA MARCHE</div>
+              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', textShadow: '2px 2px 0 #000' }}>
+                3 ÉTAPES. UNE NOUVELLE FAÇON DE BOSSER.
+              </div>
+            </div>
+          </FadeIn>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24 }}>
+            {[
+              {
+                step: '01', icon: '⚔️', color: 'var(--purple-light)',
+                title: 'CRÉE TES QUÊTES',
+                desc: 'Transforme chaque tâche en quête. Choisis la difficulté (E → S), la catégorie, la récurrence (daily, weekly, one-shot). Plus c\'est dur, plus tu gagnes.',
+              },
+              {
+                step: '02', icon: '💰', color: 'var(--gold)',
+                title: 'GAGNE XP & GOLD',
+                desc: 'Chaque quête terminée rapporte XP et or. Enchaîne des combos pour multiplier tes gains. Monte de niveau et affronte des boss.',
+              },
+              {
+                step: '03', icon: '🏆', color: 'var(--green)',
+                title: 'RÉCLAME TES RÉCOMPENSES',
+                desc: 'Définis toi-même tes récompenses — pizza, épisode Netflix, session gaming. Dépense ton or pour les débloquer. Ta monnaie, tes règles.',
+              },
+            ].map((s, i) => (
+              <FadeIn key={s.step} delay={i * 0.12}>
+                <div style={{ background: 'var(--bg-card)', border: '2px solid var(--border-light)', boxShadow: '4px 4px 0 #000', padding: '28px 20px', position: 'relative' }}>
+                  <div style={{ position: 'absolute', top: -1, left: 16, fontFamily: 'var(--font-pixel)', fontSize: '7px', color: 'var(--text-faint)', background: 'var(--bg-card)', padding: '0 8px' }}>STEP {s.step}</div>
+                  <div style={{ fontSize: 32, marginBottom: 16 }}>{s.icon}</div>
+                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '10px', color: s.color, marginBottom: 14 }}>{s.title}</div>
+                  <p style={{ fontFamily: 'var(--font-vt)', fontSize: '18px', color: 'var(--text-dim)', lineHeight: 1.5, margin: 0 }}>{s.desc}</p>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+
+          {/* Game loop arrow */}
+          <FadeIn delay={0.4}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 36, flexWrap: 'wrap' }}>
+              {[
+                { label: 'QUÊTE', color: 'var(--purple-light)' },
+                { label: '→', color: 'var(--text-faint)', dim: true },
+                { label: 'XP + GOLD', color: 'var(--gold)' },
+                { label: '→', color: 'var(--text-faint)', dim: true },
+                { label: 'NIVEAU+', color: 'var(--orange)' },
+                { label: '→', color: 'var(--text-faint)', dim: true },
+                { label: 'RÉCOMPENSE', color: 'var(--green)' },
+                { label: '→', color: 'var(--text-faint)', dim: true },
+                { label: 'MOTIVATION', color: 'var(--cyan)' },
+                { label: '↩', color: 'var(--text-faint)', dim: true },
+              ].map((item, i) => (
+                <span key={i} style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: item.color, opacity: item.dim ? 0.45 : 1 }}>{item.label}</span>
+              ))}
             </div>
           </FadeIn>
         </div>
@@ -1386,6 +1481,58 @@ export default function LandingPage({ onEnter }: Props) {
             ))}
           </div>
         </FadeIn>
+      </section>
+
+      {/* REWARD SHOP */}
+      <section style={{ padding: '60px 24px', background: 'rgba(0,230,118,0.03)', borderTop: '2px solid rgba(0,230,118,0.1)', borderBottom: '2px solid rgba(0,230,118,0.06)' }}>
+        <div style={{ maxWidth: 820, margin: '0 auto' }}>
+          <FadeIn>
+            <div style={{ textAlign: 'center', marginBottom: 40 }}>
+              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: 'var(--green)', marginBottom: 8 }}>▸ LA VRAIE DIFFÉRENCE</div>
+              <div style={{ fontFamily: 'var(--font-pixel)', fontSize: 'clamp(13px, 4vw, 18px)', color: 'var(--text)', textShadow: '2px 2px 0 #000', marginBottom: 16 }}>
+                TES RÉCOMPENSES. TES RÈGLES.
+              </div>
+              <p style={{ fontFamily: 'var(--font-vt)', fontSize: '20px', color: 'var(--text-dim)', maxWidth: 500, margin: '0 auto', lineHeight: 1.5 }}>
+                Tu définis toi-même ce que tu veux débloquer avec ton or. Pas de récompenses génériques — les tiennes, celles qui te font vraiment lever du canapé.
+              </p>
+            </div>
+          </FadeIn>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12 }}>
+            {[
+              { icon: '🍕', label: 'Pizza du vendredi', cost: '200G', color: 'var(--orange)' },
+              { icon: '📺', label: '1 épisode Netflix', cost: '120G', color: 'var(--blue)' },
+              { icon: '🎮', label: '30 min gaming', cost: '80G', color: 'var(--purple-light)' },
+              { icon: '☕', label: 'Café spécial', cost: '50G', color: '#c8a56d' },
+              { icon: '🛏️', label: 'Grasse matinée', cost: '350G', color: 'var(--green)' },
+              { icon: '✨', label: 'Ta récompense...', cost: '???G', color: 'var(--gold)', dashed: true },
+            ].map((r, i) => (
+              <FadeIn key={r.label} delay={i * 0.07}>
+                <motion.div
+                  whileHover={{ y: -3 }}
+                  style={{
+                    background: r.dashed ? 'transparent' : 'var(--bg-card)',
+                    border: `2px ${r.dashed ? 'dashed' : 'solid'} ${r.dashed ? 'var(--border-light)' : 'var(--border-light)'}`,
+                    boxShadow: r.dashed ? 'none' : '3px 3px 0 #000',
+                    padding: '16px 10px', textAlign: 'center',
+                  }}
+                >
+                  <div style={{ fontSize: 28, marginBottom: 8 }}>{r.icon}</div>
+                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '7px', color: r.dashed ? 'var(--text-faint)' : 'var(--text)', marginBottom: 8, lineHeight: 1.6 }}>{r.label}</div>
+                  <div style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: r.color }}>💰 {r.cost}</div>
+                </motion.div>
+              </FadeIn>
+            ))}
+          </div>
+
+          <FadeIn delay={0.5}>
+            <div style={{ textAlign: 'center', marginTop: 28 }}>
+              <p style={{ fontFamily: 'var(--font-pixel)', fontSize: '8px', color: 'var(--text-faint)', lineHeight: 2 }}>
+                AJOUTE N'IMPORTE QUELLE RÉCOMPENSE · FIXE TON PRIX EN GOLD · DÉBLOQUE QUAND TU VEUX
+              </p>
+            </div>
+          </FadeIn>
+        </div>
       </section>
 
       {/* FINAL CTA */}
