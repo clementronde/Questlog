@@ -10,7 +10,7 @@ import ClassSelector from './components/character/ClassSelector';
 import AuthScreen from './components/auth/AuthScreen';
 import { useGameStore } from './store/useGameStore';
 import { useTheme } from './hooks/useTheme';
-import { authGetSession, authOnChange, isConfigured } from './lib/supabase';
+import { authGetSession, authOnChange, authSignOut, isConfigured } from './lib/supabase';
 
 export default function App() {
   useTheme();
@@ -22,9 +22,10 @@ export default function App() {
   const syncLeaderboard = useGameStore((s) => s.syncLeaderboard);
   const initPlayer      = useGameStore((s) => s.initPlayer);
 
-  const [authReady,  setAuthReady]  = useState(false);   // session check done
-  const [authed,     setAuthed]     = useState(false);   // has valid session
-  const [showAuth,   setShowAuth]   = useState(false);   // CTA clicked
+  const [authReady,   setAuthReady]  = useState(false);
+  const [authed,      setAuthed]     = useState(false);
+  const [showAuth,    setShowAuth]   = useState(false);
+  const [showLanding, setShowLanding] = useState(false);
 
   useEffect(() => {
     if (!isConfigured) {
@@ -76,12 +77,21 @@ export default function App() {
     return <LandingPage onEnter={() => setShowAuth(true)} />;
   }
 
+  const handleLogout = async () => {
+    await authSignOut();
+    setAuthed(false);
+    setShowLanding(false);
+  };
+
+  // Show landing on explicit request (regardless of auth)
+  if (showLanding) return <LandingPage onEnter={() => setShowLanding(false)} />;
+
   // Class selection (first time)
   if (!heroClass) return <ClassSelector />;
 
   return (
     <>
-      <AppShell />
+      <AppShell onLogout={handleLogout} />
       <FloatingXP />
       <AchievementToast />
       <AnimatePresence>

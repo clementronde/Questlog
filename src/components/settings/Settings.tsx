@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
-import { RotateCcw, Zap, Bell, BellOff } from 'lucide-react';
+import { RotateCcw, Zap, Bell, BellOff, LogOut } from 'lucide-react';
 import { useGameStore } from '../../store/useGameStore';
 import ThemePicker from '../character/ThemePicker';
 import { requestNotificationPermission, notificationPermission, scheduleDailyReminder } from '../../lib/notifications';
 
-export default function Settings() {
+export default function Settings({ onLogout }: { onLogout: () => void }) {
   const character              = useGameStore((s) => s.character);
   const notificationsEnabled   = useGameStore((s) => s.notificationsEnabled);
   const setNotificationsEnabled = useGameStore((s) => s.setNotificationsEnabled);
@@ -133,22 +133,23 @@ export default function Settings() {
         <Zap size={20} style={{ color: 'var(--purple-light)' }} />
       </div>
 
-      {/* View landing page */}
+      {/* Logout / back to landing */}
       <div className="mb-4">
         <motion.button
           whileTap={{ x: 3, y: 3 }}
-          onClick={() => { localStorage.removeItem('ql:started'); window.location.reload(); }}
+          onClick={onLogout}
           className="w-full flex items-center justify-center gap-2 py-3"
           style={{
             background: 'var(--bg-card)',
-            border: '2px solid var(--border-light)',
+            border: '2px solid var(--purple)',
             boxShadow: '3px 3px 0 var(--pixel-shadow)',
             color: 'var(--purple-light)',
             fontFamily: 'var(--font-pixel)',
             fontSize: '9px',
           }}
         >
-          🏰 VOIR LA LANDING PAGE
+          <LogOut size={14} />
+          RETOUR À L'ACCUEIL
         </motion.button>
       </div>
 

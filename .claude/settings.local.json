@@ -6,7 +6,28 @@
       "Bash(npm run:*)",
       "Bash(pkill -f \"vite\")",
       "Bash(pkill -f vite)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Read(//Users/clementrondepierre/.claude/**)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(npx get-shit-done-cc@latest --version)",
+      "Bash(npx get-shit-done-cc@latest --help)",
+      "Bash(curl -s https://raw.githubusercontent.com/thedotmack/claude-mem/main/README.md)",
+      "Bash(curl -s \"https://api.github.com/repos/thedotmack/claude-mem/contents\")",
+      "Bash(python3 -c \"import sys,json; [print\\(f[''''name''''], f[''''type'''']\\) for f in json.load\\(sys.stdin\\)]\")",
+      "Bash(curl -s \"https://api.github.com/repos/thedotmack/claude-mem/contents/.claude\")",
+      "Bash(curl -s \"https://api.github.com/repos/thedotmack/claude-mem/contents/.claude/skills\")",
+      "Bash(python3 -c \"import sys,json; [print\\(f[''''name'''']\\) for f in json.load\\(sys.stdin\\)]\")",
+      "Bash(curl -s \"https://api.github.com/repos/thedotmack/claude-mem/contents/install\")",
+      "Bash(curl -s \"https://api.github.com/repos/thedotmack/claude-mem/contents/plugin\")",
+      "Bash(curl -s \"https://api.github.com/repos/thedotmack/claude-mem/contents/plugin/skills\")",
+      "Bash(curl -s https://raw.githubusercontent.com/thedotmack/claude-mem/main/plugin/skills/mem-search/SKILL.md)",
+      "Bash(npm i:*)",
+      "Bash(python3 -c \"import sys,json; [print\\(json.loads\\(l\\).get\\(''''type'''',''''''''\\)\\) for l in sys.stdin if l.strip\\(\\)]\")",
+      "Bash(python3:*)"
     ]
   }
 }

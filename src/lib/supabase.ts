@@ -77,6 +77,11 @@ export async function authGetSession() {
   return data.session;
 }
 
+export async function authSignOut() {
+  if (!supabase) return;
+  await supabase.auth.signOut();
+}
+
 export function authOnChange(cb: (userId: string | null) => void): () => void {
   if (!supabase) return () => {};
   const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {

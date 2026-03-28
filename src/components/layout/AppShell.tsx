@@ -19,7 +19,7 @@ const variants = {
   exit:  (dir: number) => ({ x: dir > 0 ? '-40%' : '40%', opacity: 0 }),
 };
 
-export default function AppShell() {
+export default function AppShell({ onLogout }: { onLogout: () => void }) {
   const [activeTab, setActiveTab] = useState<TabId>('quests');
   const prevIndexRef = useRef(0);
 
@@ -64,7 +64,7 @@ export default function AppShell() {
             {activeTab === 'character'   && <CharacterSheet />}
             {activeTab === 'dungeon'     && <BossScreen />}
             {activeTab === 'leaderboard' && <Leaderboard />}
-            {activeTab === 'settings'    && <Settings />}
+            {activeTab === 'settings'    && <Settings onLogout={onLogout} />}
           </motion.div>
         </AnimatePresence>
       </div>
